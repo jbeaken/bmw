@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Sponsor</title>
+	<link th:href="@{/resources/thermometer/css/goal-thermometer.css}" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" th:src="@{/resources/thermometer/js/goal-thermometer.js}"></script>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:700' rel='stylesheet' type='text/css' />
+	
+	<style>
+		div.sponsor_text {
+			font-family: 'Roboto Slab';
+			margin-top: 10px;
+			
+		}
+	</style>
+</head>
+
+<div id="content" layout:fragment="content">
+
+<h1>Sponsor Sarah&#39;s 5.25 Miles Coniston Lake Swim</h1>
+<div class="sponsor_text">5 September 2015</div>
+<div class="sponsor_text">
+Sarah&#39;s 2nd sponsored swim to support Bookmarks the socialist bookshop. Bookmarks needs regular support so that its small band of intrepid workers can do more events, go to more trade union conferences and arm even more people with the books and ideas we need to fight capitalism, austerity, racism and climate change.
+</div>
+
+<div class="sponsor_text">
+	Join the facebook event here : 
+	<a href="https://www.facebook.com/events/847012638670527/" target="_blank">
+	<img th:src="@{/resources/images/facebook_event.jpeg}"></img>
+	</a>
+</div>
+
+
+<div class="sponsor_text">
+	Sponsor Sarah (amount in pounds &pound;) : 
+	<form th:action="@{/paySponsorship}" th:object="${sponsorForm}" method="post">
+		<input type="text" name="amount" id="amount" />
+		<button type="submit">Go to Payment Screen</button>
+	</form>
+</div>
+
+<hr/>
+
+<div class="row">
+<div class="col-sm-8">
+	<img th:src="@{/resources/images/coniston-river.jpg}" class="img-responsive"></img>
+</div>
+<div class="col-sm-4">
+	<h3>Help us reach our total of &pound;800</h3>
+	<div id="goal-thermometer"></div>
+</div>
+</div>
+
+
+</div>
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+	           
+	  
+		$(function() {
+			$('.carousel').carousel();
+		});
+
+		var currentAmount = 360;
+		var goalAmount = 800;
+	/*]]>*/
+	</script>
+</html>
+

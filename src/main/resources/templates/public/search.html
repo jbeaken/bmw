@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="~{decorator/public}">
+<head>
+	<title>[[ ${'Bookmarks - ' + searchTitle} ]]</title>  
+	<meta property="og:image" content="http://bookmarksbookshop.co.uk/images/bookmarks-outside-facebook.jpg" /> 
+	<meta property="og:description" th:attr="content=${'Bookmarks - ' + searchTitle}" />
+</head>
+<!-- Search Categories -->
+<div id="content" layout:fragment="content">
+
+	<div class="alert alert-dismissable alert-danger" id="publisherAlert" th:if="${publisherId == 725 and searchBean.currentPage == 0}">
+  		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  		<strong><span th:text="${searchTitle}"></span></strong> 
+  		<p>Bookmarks has been publishing books for over 40 years. Every year we publish a selection of books and pamphlets that address the key issues facing activists and trade unionists. Many of our older publications are available from our secondhand section.</p>
+	</div>
+	
+	<div class="search_search_title"><span th:text="${stockItemSearchBean.count}"></span> Results for <span th:utext="${searchTitle}"></span></div>
+	
+	<div class="pagination" style="display:inline-block"></div>
+	
+	<div id="results" class="results-on">
+
+		<section class="result-part" th:each="stockItem : ${stockItemSearchBean.results}">
+
+			<div id="search_stockitem_image_holder" class="col-xs-3 col-md-2"> 
+				<a th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}" th:if="${stockItem.hasImage == true}">
+					<img th:if="${stockItem.hasImage == true}"  id="result-thumb" th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${stockItem.imageFilename})}" class="img-responsive img-polaroid"/>
+				</a>
+				<img th:if="${stockItem.hasImage == false}" id="result-thumb" class="img-responsive img-polaroid hidden-xs" th:src="@{/images/no_image_available.jpg}" />
+			</div>
+			
+			<div id="search_stockitem_content" class="col-xs-9 col-md-10">
+			
+				<div id="search_stock_item_title">
+					<a th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}" th:text="${stockItem.title}"></a>
+				</div>
+				
+				<div id="stockItem_authors">
+					<span th:each="author : ${stockItem.authors}">
+						<a th:href="@{/stockItem/searchByAuthor(author.id=${author.id}, author.name=${author.name})}" th:text="${author.name}"></a>
+					</span>
+				</div>
+				
+				<div>
+					<span th:utext="${stockItem.reviewShort}" th:if="${stockItem.reviewShort}"></span><a th:attr="href=${stockItem.viewUrl}" th:if="${stockItem.reviewShort}">Click here for more</a>
+				</div>
+				
+				<!-- price, availability, publisher name, what is it -->
+				<div class="col-xs-6" style="padding-left : 0px;">
+					<ul style="padding-left : 0px; list-style-type: none;">
+						<li class="search_stockitem_price">&pound;<span th:text="${#numbers.formatDecimal(stockItem.sellPrice,1,2)}"></span> &amp; postage in UK &pound;<span th:text="${#numbers.formatDecimal(stockItem.fullPostage,1,2)}"></span></li>
+						<li><span class="in_stock" th:text="${stockItem.availabilityMessage}"></span></li>
+						<li><span th:text="${stockItem.whatIsIt}"></span></li>
+					</ul>
+				</div>
+				
+				<!-- published date, isbn -->
+				<div class="col-xs-6">
+					<ul style="padding-left : 0px; list-style-type: none;">
+						<li th:if="${stockItem.publishedDate != null}"><span class="stock_item_field_description">Published Date : </span><span th:text="${#dates.format(stockItem.publishedDate, 'dd MMM yyyy')}" ></span></li>
+						<li><span class="stock_item_field_description">ISBN : </span><span th:text="${stockItem.isbn}"></span></li>
+						<li><span class="stock_item_field_description">Publisher : </span><span th:text="${stockItem.publisher.name}"></span></li>
+					</ul>
+				</div>					
+				
+			</div><!-- End stockItem_content_holder col-xs-9 col-md-10 -->
+			
+		</section>
+
+		<br/>
+		<div class="pagination"></div>
+	</div>
+</div>
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+	$(function() {
+				//Bootstrap pagination
+				var options = {
+					currentPage: [[${stockItemSearchBean.currentPage + 1}]],
+				//totalPages: 3,
+				totalPages: [[${stockItemSearchBean.totalPages}]],
+				numberOfPages : 10,
+				pageUrl: function(type, page, current){
+					return "[[@{/stockItem/}]][[${pageUrl}]]&currentPage=" + (page - 1);
+				}
+			}
+			
+			$('.pagination').bootstrapPaginator(options);
+		});
+	/*]]>*/
+	</script>
+	</html>

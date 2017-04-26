@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="~{decorator/public}">
+<head>
+<title>[[ ${'Bookmarks - ' + searchTitle} ]]</title>
+<meta property="og:image"
+	content="http://bookmarksbookshop.co.uk/images/bookmarks-outside-facebook.jpg" />
+<meta property="og:description"
+	th:attr="content=${'Bookmarks - ' + searchTitle}" />
+
+<style>
+div.stock_item_price {
+	font-size: 20px;
+	padding-top: 0px;
+}
+
+div.stock_item_holder {
+	height: 250px;
+}
+</style>
+</head>
+<!-- Search Categories -->
+<div id="content" layout:fragment="content">
+
+	<div class="search_search_title">
+		<span th:text="${stockItemSearchBean.count}"></span> Results for <span
+			th:utext="${searchTitle}"></span>
+	</div>
+
+<div>
+		<div class="col-md-4" th:each="stockItem : ${stockItemSearchBean.results}">
+
+			<div class="row">
+				<div class="col-md-12">
+					<a
+						th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}">
+						<img th:if="${stockItem.hasImage == true}" id="result-thumb"
+						th:src="@{/imageFiles/original/{imageFilename}(imageFilename=${stockItem.imageFilename})}"
+						class="img-responsive img-polaroid" /> <img
+						th:if="${stockItem.hasImage == false}" id="result-thumb"
+						class="img-responsive img-polaroid hidden-xs"
+						th:src="@{/images/no_image_available.jpg}" />
+					</a>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div>
+						<a
+							th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}"
+							th:text="${stockItem.shortTitle}"></a>
+					</div>
+
+					<div>
+						&pound;<span
+							th:text="${#numbers.formatDecimal(stockItem.sellPrice,1,2)}"></span>
+					</div>
+
+					<div id="stockItem_authors">
+						<span th:each="author : ${stockItem.authors}"> <a
+							th:href="@{/stockItem/searchByAuthor(author.id=${author.id}, author.name=${author.name})}"
+							th:text="${author.name}"></a>
+						</span>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+
+		<br />
+
+		<div class="pagination"></div>
+
+	</div>
+	<!-- /#results -->
+</div>
+<!-- /.content -->
+
+<!-- TEMPLATES -->
+<div th:fragment="stockItemHolder (stockItem)" class="col-md-4">
+
+	<div class="row stock_item_holder">
+		<div id="search_stockitem_image_holder" class="col-md-6">
+
+			<a
+				th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}">
+				<img th:if="${stockItem.hasImage == true}" id="result-thumb"
+				th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${stockItem.imageFilename})}"
+				class="img-responsive img-polaroid" /> <img
+				th:if="${stockItem.hasImage == false}" id="result-thumb"
+				class="img-responsive img-polaroid hidden-xs"
+				th:src="@{/images/no_image_available.jpg}" />
+			</a>
+
+
+		</div>
+
+		<div id="search_stockitem_content" class="col-md-6">
+
+			<div id="search_stock_item_title">
+				<a
+					th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}"
+					th:text="${stockItem.shortTitle}"></a>
+			</div>
+
+		</div>
+		<!-- /.stockItem_content_holder -->
+	</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="stock_item_price">
+				&pound;<span
+					th:text="${#numbers.formatDecimal(stockItem.sellPrice,1,2)}"></span>
+			</div>
+		</div>
+		<div class="col-md-6">
+
+			<div id="stockItem_authors">
+				<span th:each="author : ${stockItem.authors}"> <a
+					th:href="@{/stockItem/searchByAuthor(author.id=${author.id}, author.name=${author.name})}"
+					th:text="${author.name}"></a>
+				</span>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- /end stockItem -->
+
+
+
+<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+	$(function() {
+				//Bootstrap pagination
+				var options = {
+					currentPage: [[${stockItemSearchBean.currentPage + 1}]],
+				//totalPages: 3,
+				totalPages: [[${stockItemSearchBean.totalPages}]],
+				numberOfPages : 10,
+				pageUrl: function(type, page, current){
+					return "[[@{/stockItem/}]][[${pageUrl}]]&currentPage=" + (page - 1);
+				}
+			}
+			
+			$('.pagination').bootstrapPaginator(options);
+		});
+	/*]]>*/
+	</script>
+</html>

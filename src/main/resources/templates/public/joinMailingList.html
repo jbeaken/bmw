@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Join Mailing List</title>
+	<style>
+	
+	</style>
+</head>
+
+<div id="content" layout:fragment="content">
+
+	<h1>Please enter your email below to receive updates on offers, author events and new bookmark&#39;s publications</h1>
+	
+	<form th:action="@{/joinMailingList}" th:object="${contactForm}" method="post" role="form" id="joinMailingListForm">
+		<div class="row">
+			<div class="col-sm-6">
+			<div class="form-group">
+				<label for="email">Email</label>
+					<input th:field="*{email}" class="form-control" type="email" placeholder="email" required="required" autofocus="autofocus"/>
+			</div>
+			<input type="submit" class="btn btn-danger" value="Join"/>
+			</div>
+		</div>
+	</form>
+
+</div>
+
+</html>
+

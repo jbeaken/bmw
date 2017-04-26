@@ -1,0 +1,41 @@
+<!-- START Modals -->
+ 
+<div id="showChangeOrderLineQuantity" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="myModalLabel">Change Quantity</h3>
+			</div>
+			<div class="modal-body">
+				<input type="text" id="changedQuantity"/>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:updateQuantity()" class="btn btn-primary">Update</a>
+				<button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+			</div>
+     	</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+<div id="showAddedStockItemToCustomerOrderModel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="myModalLabel">Success!</h3>
+			</div>
+			<div class="modal-body">
+				<div id="information"></div>
+			</div>
+			<div class="modal-footer">
+				<a th:href="@{/customerOrder/showBasket}" class="btn btn-primary">View Basket</a>
+				<button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Continue Shopping</button>
+			</div>
+     	</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+
+  
+<!-- END Modals -->

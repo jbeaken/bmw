@@ -1,0 +1,100 @@
+<div class="col-sm-3 col-sm-pull-9">
+<!-- Sidebar Starts Here -->
+<div class="padd sidebar">
+
+  <!-- Each sidebar should be enclosed inside "sidebar_widget class" -->
+
+  <!-- 1st sidebar_widget -->
+  <div class="sidebar_widget hidden-xs">
+    <!-- Sidebar heading enclosed inside h3. Don't forget to add the class "sidebar_header". -->
+    <h3>Search</h3>
+    <!-- Sidebar content should be enclosed inside div with the class "sidebar_content". -->
+    <div class="sidebar_content">
+      <!-- Search form -->
+      <form th:action="@{/stockItem/searchIndex}" class="form-inline" id="searchForm">
+        <input id="sidebar_search_input" type="text" name="q" th:value="${q}" class="form-control" placeholder="Type to search.."/>
+        <span id="sidebar_search_button" class="glyphicon glyphicon-search" onclick="document.getElementById('searchForm').submit();"></span>
+      </form>
+    </div>
+  </div>
+
+  <div class="sidebar_widget" th:if="${not #lists.isEmpty(application.layout.upcomingEvents)}">
+    <h3>Next Shop Event</h3>
+    <div class="sidebar_content">
+      <div class="event_image">
+      	<a th:href="@{/events}">
+      		<img th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${application.layout.upcomingEvents[0].stockItem.imageFilename})}" class="img-responsive sidebar_event_image" />
+      	</a>
+      </div>
+      <ul>
+      	<li><a href="/events"><span th:text="${#dates.format(application.layout.upcomingEvents[0].startDate, 'EEEE dd MMM')}"></span>, <span th:text="${application.layout.upcomingEvents[0].startTime}">></span></a></li>
+      	<li><a href="/events" th:text="${application.layout.upcomingEvents[0].stockItem.title}" th:if="${application.layout.upcomingEvents[0].stockItem != null and application.layout.upcomingEvents[0].showName == false}">></a></li>
+	      <li><a href="/events" th:text="${application.layout.upcomingEvents[0].name}" th:if="${application.layout.upcomingEvents[0].showName == true}">></a></li>
+      	<li th:if="${application.layout.upcomingEvents[0].stockItem != null and application.layout.upcomingEvents[0].stockItem.mainAuthor != null and application.layout.upcomingEvents[0].showAuthor == true}"><a href="/events">With <span th:text="${application.layout.upcomingEvents[0].stockItem.mainAuthor.name}"></span></a></li>
+     </ul>
+    </div>
+  </div>
+
+  <!-- 3rd sidebar_widget -->
+  <div class="sidebar_widget">
+    <h3>Browse</h3>
+    <div class="sidebar_content">
+     <ul>
+     	<li><a th:href="@{/stockItem/searchByType(type=${'DVD'})}">DVDs</a></li>
+     	<li><a th:href="@{/stockItem/searchByType(type=${'CD'})}">CDs</a></li>
+      <li><a th:href="@{/stockItem/searchByEbooks}">Ebooks</a></li>
+     	<li><a th:href="@{/stockItem/searchByCategory(category.id=69, category.name='Merchandise')}">Merchandise</a></li>
+     	<li th:each="category : ${application.sidebarCategories}"><a th:href="@{/stockItem/searchByCategory(category.id=${category.id}, category.name=${category.name}, flow='sidebar')}" th:text="${category.name}"></a></li>
+     	<li class="sidebar_highlight"><a th:href="@{/categories}">More Categories</a></li>
+     	<li class="sidebar_highlight"><a th:href="@{/stockItem/searchByNewReleases}">New Releases</a></li>
+     	<li class="sidebar_highlight"><a th:href="@{/brochure}">Our Brochure</a></li>
+     </ul>
+    </div>
+  </div>
+
+  <div class="sidebar_widget hidden-xs">
+    <h3>Reading Lists</h3>
+    <div class="sidebar_content">
+     <ul>
+      <li th:each="readingList : ${application.sidebarReadingLists}">
+			<a th:href="@{/stockItem/searchByReadingList(readingList.id=${readingList.id}, readingList.name=${readingList.name})}" th:text="${readingList.name}"></a>
+		  </li>
+     </ul>
+    </div>
+  </div>
+
+  <!-- 4th sidebar_widget -->
+  <div class="sidebar_widget">
+    <h3>Opening Times</h3>
+    <div class="sidebar_content">
+     <ul>
+     	<li>Monday : 12-7pm</li>
+			<li>Tuesday : 10-7pm</li>
+			<li>Wednesday : 10-7pm</li>
+			<li>Thursday : 10-7pm</li>
+			<li>Friday : 10-7pm</li>
+			<li>Saturday : 10-7pm</li>
+			<li>Sunday : Closed</li>
+     </ul>
+    </div>
+  </div>
+
+  <!-- 5th sidebar_widget
+  <div class="sidebar_widget">
+    <h3>Sponsor Sarah&#96;s Swim</h3>
+    <div class="sidebar_content">
+    	<a th:href="@{/sponsor}">Click here for details</a>
+    </div>
+  </div>
+
+  <div class="sidebar_widget">
+    <h3>Kickstarter page for 1917: Russia&#96;s Red Year </h3>
+    <div class="sidebar_content">
+      <a href="https://www.kickstarter.com/projects/556239072/1917-russias-red-year-100th-anniversary-graphic-no">Click here for details</a>
+    </div>
+  </div>
+-->
+</div>
+
+</div>
+<!-- Sidebar Ends Here -->

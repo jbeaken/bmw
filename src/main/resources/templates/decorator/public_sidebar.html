@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Main</title>
+
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"/>
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet"/>
+	<link href='http://fonts.googleapis.com/css?family=Dosis:200,400,600' rel='stylesheet' type='text/css'/>
+	<link type="text/css" th:href="@{/resources/css/main.css}" rel="stylesheet"/>
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	
+	<style>
+	.features {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #eee;
+	}
+	.matopen {
+	   color : #CE2A31;
+	}
+	.padd-f {
+	padding: 10px 0px 10px 0px;
+	margin-left: 15px;
+	}
+	.features h4 {
+	color: #c60009;
+	}
+	.features h4 {
+	font-size: 25px;
+	line-height: 30px;
+	margin: 0px 0px 5px 0px;
+	padding-bottom: 5px;
+	}
+	.padd-m {
+	padding: 10px 0px;
+	margin: 0px 6px;
+	}
+	.padd-l {
+	padding: 10px 0px 10px 0px;
+	margin-right: 15px;
+	}
+		body {
+	font-family: Tahoma, Verdana, sans-serif;
+	color: #555;
+	font-size: 13px;
+	line-height: 25px;
+	background: #f3f3f3;
+	}
+	.padd {
+	padding: 10px;
+	}
+	.widget {
+	padding: 10px 0px;
+	}
+	.sidebar h3 {
+	font-size: 24px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #ddd;
+	}
+	h1, h2, h3, h4, h5, h6 {
+	font-family: 'Dosis', sans-serif;
+	font-weight: normal;
+	padding: 0px;
+	margin: 0px;
+	color: #888;
+	}
+	.sidebar ul {
+	list-style-type: none;
+	margin: 0px;
+	margin-left: -40px;
+	}
+	.sidebar li {
+	padding: 4px 0px;
+	border-bottom: 1px dashed #ddd;
+	}
+	.sidebar a, .sidebar a:visited, .sidebar a:hover {
+	color: #666;
+	text-decoration: none;
+	}
+		/* Pagination */
+		.pagination ul {
+	display: inline-block;
+	margin-bottom: 0;
+	margin-left: 0;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	}
+	.pagination ul, .pagination ol {
+	padding: 0;
+	margin: 0 0 10px 25px;
+	}
+	.pagination ul > li {
+	display: inline;
+	}
+	.pagination ul > li:first-child > a, .pagination ul > li:first-child > span {
+	border-left-width: 1px;
+	-webkit-border-bottom-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+	-webkit-border-top-left-radius: 4px;
+	border-top-left-radius: 4px;
+	-moz-border-radius-bottomleft: 4px;
+	-moz-border-radius-topleft: 4px;
+	}
+	.pagination ul > li > a, .pagination ul > li > span {
+	float: left;
+	padding: 4px 12px;
+	line-height: 20px;
+	text-decoration: none;
+	background-color: #ffffff;
+	border: 1px solid #dddddd;
+	border-left-width: 0;
+	}
+	/* Footer */
+
+	footer {
+		background:#333 url("/resources/images/footer/back.png") repeat;
+		border-top:3px solid #ddd; 
+		box-shadow:inset 0px 0px 3px #111;
+		color:#ccc;
+		font-size:14px;
+		line-height:25px;
+		padding:35px 0px 10px 0px;
+	}
+
+	footer a {
+		color:#eee;
+		text-decoration:none;
+		border-bottom:1px dotted #888;
+	}
+
+	footer a:hover {
+		color:#aaa;
+		text-decoration:none;
+		border:0px;
+	}
+
+	footer hr {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border-top: #000 1px solid;
+		border-bottom: #212121 1px solid;
+	}
+
+	footer .social {
+		margin-top:10px;
+	}
+
+	footer .social a i {
+		width:30px;
+		height:30px;
+		font-size:13px !important;
+		line-height:30px;
+		box-shadow:1px 1px 3px #000;
+	}
+
+
+.social {
+   margin:10px 0px;
+}
+
+.social a i {
+   display:inline-block;
+   width:40px;
+   height:40px;
+   font-size:17px !important;
+   line-height:40px;
+   text-decoration:none;
+   text-align:center;
+   color:#fff;
+   -webkit-transition: background 2s ease;
+   -moz-transition: background 2s ease;
+   -o-transition: background 2s ease;
+   -ms-transition: background 2s ease;
+   transition: background 2s ease;
+   border-radius:100px;
+   margin-right:5px;
+}
+.social a.facebook i {
+	background:#1e78ae;
+}
+
+.social a.twitter i {
+	background:#1ba1e2;
+}
+
+.social a.google-plus i {
+	background:#f22d0c;
+}
+
+.social a.pinterest i{
+	background:#dd1617;
+}
+
+.social a.linkedin i {
+	background:#2d93cf;
+}
+
+.social a:hover i {
+   background:#000;
+   -webkit-transition: background 2s ease;
+   -moz-transition: background 2s ease;
+   -o-transition: background 2s ease;
+   -ms-transition: background 2s ease;
+   transition: background 2s ease;
+}
+
+.social a, .social a:hover {
+   border:0px;
+   text-decoration:none;
+}	
+
+	footer  i.contact-icon{
+		background:#0fa6bc;
+		width:30px;
+		height:30px;
+		line-height:30px;
+		text-align:center;
+		display:inline-block;
+		border-radius:100px;
+		color:#fff;
+		font-size:12px;
+		margin-right:7px;
+	}
+
+	footer .address p{
+		margin-bottom:6px;
+	}
+
+	footer .copy{
+		font-size:13px;
+		margin:15px 0px;
+	}
+	body {
+		padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	.carousel-caption {
+		background-color: transparent;
+		padding: 0 20px;
+		margin-top: 50px;
+		margin-left: 100px;
+	}
+
+	div#stockItemTitle {
+		font-variant: small-caps;
+		font-weight: bold;
+	}
+
+	div#stockItemSellPrice {
+		color: red;
+		font-weight: bold;
+	}      
+
+	div#stockItemStockStatus {
+		color : green;
+	}
+
+	div#stockItemImageHolder {
+		padding-bottom: 10px;
+	}
+
+	body .modal-payment {
+		/* new custom width */
+		width: 850px;
+		/* must be half of the width, minus scrollbar on the left (30px) */
+		margin-left: -375px;
+	}
+	.nav-pills>.active>a, .nav-pills>.active>a:hover {
+		color: #fff;
+		background-color: #ccc;
+		font-weight: bold;
+	}
+	.nav-pills>.active>a, .nav-pills>.active>a:hover {
+		color: #fff !important;
+		background-color: #ccc !important;
+		font-weight: bold !important;
+		margin-bottom: 3px !important;
+		border-radius: 0 !important;
+	}  
+
+	</style>
+
+
+
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	  <![endif]-->
+
+	  <!-- Fav and touch icons -->
+	  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png"/>
+	  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png"/>
+	  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png"/>
+	  <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png"/>
+	  <link rel="shortcut icon" href="ico/favicon.png"/>
+	  
+	  <script th:inline="javascript">
+	  /*<![CDATA[*/
+	  
+		//Bouncy books
+		//var j = jQuery.noConflict();
+		
+		var currentStockItemId;
+		
+		$(document).ready(function() {
+			$(".pr_item").hover(function(){
+				$(this).find("img").stop().animate({marginTop: "-16px"});
+				$(this).find("h3").stop().css({display:"block"},300);
+			}, function(){
+				$(this).find("img").stop().animate({marginTop: "0px"});
+				$(this).find("h3").stop().css({display:"none"},100)
+			});
+		});
+		
+		function setPaymentType(paymentType) {
+			$('#paymentType').val(paymentType);
+			if(paymentType == 'ACCOUNT') {
+				$('#creditCardPaymentTypeButton').show();
+				$('#accountPaymentTypeButton').hide();
+				$('#whatsThisAccount').hide();
+				$('#accountAlert').show();
+			}
+			if(paymentType == 'CREDIT_CARD') {
+				$('#creditCardPaymentTypeButton').hide();
+				$('#accountPaymentTypeButton').show();
+				$('#whatsThisAccount').show();
+				$('#accountAlert').hide();
+			}			
+		}
+		
+		function setDeliveryType(deliveryType){
+			$('#deliveryType').val(deliveryType);
+			if(deliveryType == 'MAIL') {
+				$('#collectionDeliveryTypeButton').show();
+				$('#mailOrderDeliveryTypeButton').hide();
+				$('#collectionAlert').hide();
+				$('#addressFields').show();
+			}
+			if(deliveryType == 'COLLECTION') {
+				$('#collectionDeliveryTypeButton').hide();
+				$('#mailOrderDeliveryTypeButton').show();
+				$('#collectionAlert').show();
+				//$('#addressFields').hide();
+				$('#address.address1').removeAttr('required');
+				alert('here');
+				$('#address.postcode').removeAttr('required');
+				$('#address.city').removeAttr('required');
+				$('#address.country').removeAttr('required');				
+			}			
+		}
+		
+		//Called when clicking 'Add to Basket'       
+		function addStockItemToBasket(stockItemId) {
+			$.getJSON('/customerOrder/' + stockItemId, function(data) {
+
+				console.log(data);
+				var imgHtml = '';
+				if(data['imgUrl'] != null) {
+					imgHtml = "<img src='" + data['imgUrl'] + "' width='10%' class='pull-left' style='padding-right : 10px;'></img>"
+				}
+				var information = imgHtml + "You have added <b>" + data['title'] + "</b> to your basket! Press buttons below to view your bakset or continue shopping.";
+				$('div#information').html(information);
+				$('div#showAddedStockItemToCustomerOrderModel').modal('show');
+			}); 
+		}
+
+		function showBasket() {
+			$.getJSON('/customerOrder/getCustomerOrders', function(data) {
+				buildCustomerOrdersTable(data);
+
+				$('div#showStockItemModel').modal('hide');
+				$('div#showCustomerOrderModel').modal('show');
+			}); 
+		}
+
+		function emptyBasket() {
+			$.getJSON('/BookmarksWebsite/customerOrder/emptyBasket', function(data) {
+				$('div#showStockItemModel').modal('hide');
+				$('div#showCustomerOrderModel').modal('hide');
+			}); 
+		}
+
+		function removeCustomerOrderLine(index) {
+			$.getJSON('/customerOrder/removeCustomerOrderLine/' + index, function(data) {
+				buildCustomerOrdersTable(data);
+
+				$('div#showStockItemModel').modal('hide');
+				$('div#showCustomerOrderModel').modal('show');
+			}); 
+		}        
+
+		function continueShopping() {
+			$('div#showCustomerOrderModel').modal('hide');
+			$('div#showStockItemModel').modal('hide');
+		}
+		/*]]>*/
+		</script> 
+
+		<script layout:fragment="top_scripts"></script>	
+	</head>
+
+	<body>
+		<div class="container">
+
+			<div th:include="decorator/navbar"></div>
+			<div class="row">
+				<div th:include="decorator/sidebar"></div>
+			
+				<div class="container col-md-9">
+					<div class="row logo">
+						<a th:href="@{/public}" title="Bookmarks">
+							<img th:src="@{/resources/images/bookmarks_logo_500.png}" alt="Bookmarks" />
+						</a>
+					</div>
+		
+					<div layout:fragment="content"></div>
+            
+				</div>
+			</div><!-- End row -->
+			
+			<hr/>
+			
+			<div th:include="decorator/features"></div>
+			
+			<div th:include="decorator/footer"></div>
+
+			<div th:include="decorator/modals"></div>
+
+			<!-- Le javascript -->
+			<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script> 
+			<script th:src="@{/resources/js/bootstrap-paginator.min.js}"></script>
+
+			<script layout:fragment="bottom_scripts"></script>
+		</div> <!-- /container -->    
+	</body>
+	</html>

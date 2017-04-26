@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorate="~{decorator/public}">
+  <head>
+    <title>Bookmarks - Customer Details</title>  
+    <style type="text/css">
+
+    </style>
+  </head>
+  <body>
+
+	<!-- Search Categories -->
+	<div id="content" layout:fragment="content">
+		<div class="alert alert-dismissable alert-danger" id="accountAlert" th:if="${session.order.customer.paymentType.displayName == 'Account'}">
+	  		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	  		<strong>Now paying with Account</strong> 
+	  		<p>For identification purposes, please ensure your email matches the email we have stored at our shop. If it has changed or you think we have the wrong email address for you, please ring <strong>0207 637 1848</strong></p>
+		</div>
+		
+		<form th:action="@{/customerOrder/saveCustomerDetails}" th:object="${customer}" method="post" role="form" id="customerDetailsForm">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="firstName">Your First Name</label>
+						<input th:field="*{firstName}" type="text" id="firstName" class="form-control" placeholder="your first name" maxlength="40" required="required" autofocus="autofocus" />
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="lastName">Your Surname</label>
+						<input th:field="*{lastName}" type="text" id="lastName" class="form-control" placeholder="your surname" maxlength="40" required="required" />
+					</div>
+				</div>	
+			</div>
+			<div class="row">			
+				<div class="col-sm-12">									
+					<div class="form-group">
+						<label for="mobileNumber">Telephone</label>
+						<input th:field="*{contactDetails.mobileNumber}" class="form-control" type="text" id="mobileNumber" placeholder="telephone" maxlength="30" required="required"/>
+					</div>
+				</div>				
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label for="email">E-Mail</label>
+						<input th:field="*{contactDetails.email}" class="form-control" type="email" id="email" placeholder="your email"  maxlength="40" required="required"/>
+					</div>
+				</div>				
+			</div><!-- End .row -->
+			<hr/>
+			<div class="row">
+				<button type="submit" class="btn btn-danger">Save Details</button>
+			</div>	
+			<hr/>
+		</form>
+				
+	</div><!-- End #content -->
+	
+	<script layout:fragment="bottom_scripts">
+		/*<![CDATA[*/
+		/*]]>*/
+	</script>
+	
+  </body>
+</html>

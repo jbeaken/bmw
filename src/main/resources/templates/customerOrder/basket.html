@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - View Basket</title>
+	<style type="text/css">
+		.panel-default > .panel-heading {
+			font-family: 'Dosis', sans-serif;
+			font-weight: normal;
+			padding: 10px 10px;
+			/*color: #CE2A31; */
+			color : grey;
+			font-size: 24px;
+			margin: 0px;
+		}
+
+		.basket_pay_button {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+
+	<!-- Search Categories -->
+	<div id="content" layout:fragment="content">
+			<div class="panel panel-default panel-basket">
+				<!-- Default panel contents -->
+				<div class="panel-heading">Your Basket. Please click on change quantity and remove to edit your items</div>
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered">
+						<thead>
+							<th>Image</th>
+							<th>Title</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Total Price</th>
+							<th>Options</th>
+						</thead>
+						<tbody class='ui-widget-content'>
+							<tr th:each="orderLine, index : ${session.order.customer.orders}">
+								<td width="10%">
+									<img th:if="${orderLine.stockItem.imageUrl != null}" id="result-thumb" class="img-responsive" th:attr="src=${orderLine.stockItem.smallerImageUrl}" />
+									<img th:if="${orderLine.stockItem.imageUrl == null}" id="result-thumb" class="pull-left" style="padding-right: 20px" th:src="@{/images/no_image_available.jpg}" />
+								</td>
+								<td th:text="${orderLine.stockItem.title}"></td>
+								<td th:text="${orderLine.quantity}"></td>
+								<td>&pound;<span th:text="${#numbers.formatDecimal(orderLine.stockItem.sellPrice, 0, 'COMMA', 2, 'POINT')}"></span></td>
+								<td>&pound;<span th:text="${#numbers.formatDecimal(orderLine.totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></td>
+								<td width="15%">
+									<a th:href="@{/customerOrder/removeCustomerOrderLine(stockItemId=${orderLine.stockItem.id})}"><span class="glyphicon glyphicon-trash"></span> Remove</a><br/>
+									<a th:attr="href=${'javascript:showChangeQuantity(' + orderLine.stockItem.id + ',' + orderLine.quantity + ')'}"><span class="glyphicon glyphicon-hand-up"></span> Change Quantity</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div><!-- End Panel -->
+
+			<div class="basket_prices row">
+				<div class="col-xs-2">
+					<div>POSTAGE :</div>
+					<div>TOTAL   :</div>
+				</div>
+				<div class="col-xs-10">
+					<div><span class="glyphicon glyphicon-gbp"></span><span th:text="${#numbers.formatDecimal(session.order.postage, 0, 'COMMA', 2, 'POINT')}"></span></div>
+					<div><span class="glyphicon glyphicon-gbp"></span><span th:text="${#numbers.formatDecimal(session.order.totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></div>
+				</div>
+			</div>
+
+			<div class="basket_pay_button">
+				<a th:href="@{/customerOrder/showCustomerDetailsScreen(flow=${'basket'})}" class="btn btn-danger">Proceed To Checkout</a>
+			</div>
+
+		<!-- Account panel -->
+		<div class="panel panel-default panel-account">
+		  <div class="panel-heading">Have you got a bookmarks account?</div>
+		  <div class="panel-body">
+		    <p>If you have previously opened an account with us and you are paying at least &pound;10 into it each month, you will get 10% of the price of your books, or free delivery to anywhere in the UK.</p>
+		    <p>Read more or apply <a href="/account">here</a> or pay using your existing account <a th:href="@{/customerOrder/setAsAccountPaymentType}">here</a></p>
+		  </div>
+		</div>
+
+	</div><!-- End #content -->
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+
+      $(function (){
+         $("#example").popover();
+      });
+
+
+	function showChangeQuantity(stockItemId, quantity) {
+		currentStockItemId = stockItemId;
+		$('input#changedQuantity').val(quantity);
+		document.getElementById('changedQuantity').focus();
+		$('div#showChangeOrderLineQuantity').modal('show');
+	}
+
+	function updateQuantity() {
+		var quantity = $('input#changedQuantity').val();
+		window.location.href = '[[@{/customerOrder/updateQuantity}]]?quantity=' + quantity + '&stockItemId=' + currentStockItemId;
+	}
+	/*]]>*/
+	</script>
+
+</body>
+</html>

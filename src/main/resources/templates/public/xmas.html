@@ -1,0 +1,86 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Xmas</title>
+	<style>
+		div.stock-item {
+			margin : 10px 15px;
+			height : 300px;
+			border: 1px solid #DDD;
+		}
+		div.product-listing {
+			padding : 0px; 15px;
+		}
+	</style>
+</head>
+
+<div id="content" layout:fragment="content">
+
+<!-- Menu -->
+	
+	<div class="row">
+		
+		<div class="col-md-12">
+		
+			<ul class="main-nav clearfix">
+			
+				<li class="active"><a href="index.html">New</a></li>
+				<li><a href="products-men.html">Men's</a></li>
+				<li><a href="products-women.html">Women's</a></li>
+			
+			</ul>
+		
+		</div>
+		
+	</div>
+	
+
+<!-- Body -->
+	
+	<div class="row">
+		
+		<div class="col-md-12">
+		
+			<h1>New Products</h1>
+		
+		</div>
+		
+	</div>
+
+	<!-- Product Listing -->
+	
+		
+	<div class="row">
+			<div class="col-md-4 product-listing" th:each="stockItem, iterStatus : ${stockItemList}">
+				<div class="stock-item">
+				<p class="title"><a th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}" th:text="${stockItem.title}"></a></p>
+				
+				<a th:href="@{/view/{id}/{url}(id=${stockItem.id}, url=${stockItem.cleanTitleForUrl})}">
+					<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/{isbn}.jpg(isbn=${stockItem.isbn})}"	/>
+				</a>
+				
+				<p class="price">
+					&pound; 9.99
+					<a class="btn btn-addcart btn-primary" href="basket.html">
+						<span class="entypo cart"></span>
+					</a>
+					<a class="btn btn-view btn-grey" href="product.html">
+						<span class="entypo search"></span>
+					</a>
+				</p>
+				</div><!-- /stock-item -->
+			</div><!-- /product-listing -->
+	</div><!-- /row -->
+		
+
+
+</div>
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+	
+	/*]]>*/
+	</script>
+</html>
+

@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Sponsor</title>
+	<link th:href="@{/resources/thermometer/css/goal-thermometer.css}" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" th:src="@{/resources/thermometer/js/goal-thermometer.js}"></script>
+</head>
+
+<div id="content" layout:fragment="content">
+
+<form th:action="@{/paySponsorship}" th:object="${sponsorForm}" method="post" role="form">
+	<div class="row">
+		<div>
+			<div class="form-group">
+				<label for="name">First Name</label>
+				<input th:field="*{firstName}" type="text" id="name" class="form-control" placeholder="first name" required="required" autofocus="autofocus" />
+			</div>
+
+			<div class="form-group">
+				<label for="name">Last Name</label>
+				<input th:field="*{lastName}" type="text" id="name" class="form-control" placeholder="last name" required="required" autofocus="autofocus" />
+			</div>
+										
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input th:field="*{email}" class="form-control" type="email" placeholder="email" required="required"/>
+			</div>
+							
+			<div class="form-group">
+				<label for="amount">Amount in &pound;</label>
+				<input th:field="*{amount}" class="form-control" type="text" placeholder="amount" required="required"/>
+			</div>
+		
+ 		</div>
+ 	</div>
+	<hr/>
+	<div class="row">
+		<button type="submit" class="btn btn-danger">Sponsor</button>
+	</div> 	
+</form>
+</div>
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+
+	/*]]>*/
+	</script>
+</html>
+

@@ -1,0 +1,72 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Shop</title>
+	<style>
+	/* Flexible iFrame */
+
+.flexible-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px;
+    height: 0;
+    overflow: hidden;
+}
+
+.flexible-container iframe,
+.flexible-container object,
+.flexible-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+	</style>
+</head>
+<!-- Search Categories -->
+<div id="content" layout:fragment="content">
+
+	<div class="row shop_address">
+		<h1>1, Bloomsbury Street, London WC1B 3QE</h1>
+	</div>
+
+	<div class="row">
+		<div class="flexible-container">
+		    <iframe
+		    	width="425"
+		    	height="350"
+		    	frameborder="0"
+		    	scrolling="no"
+		    	marginheight="0"
+		    	marginwidth="0"
+					src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.7890509244044!2d-0.12718699999996308!3d51.517086000000006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761b32f3e885ef%3A0xda9256c3553ee4ad!2sBookmarks!5e0!3m2!1sen!2suk!4v1427800124664">
+		    </iframe>
+		</div>
+	</div>
+
+	<div class="row shop_tube">
+
+		<div class="col-sm-2">
+			<img th:src="@{/images/tube.png}" class="img-responsive"/>
+		</div>
+
+		<div class="col-sm-9">
+			<ul>
+				<li class="shop_tube_central">Central Line : Holborn or Tottenham Court Road</li>
+				<li class="shop_tube_northern">Northern Line : Tottenham Court Road</li>
+				<li class="shop_tube_picadilly">Picadilly Line : Holborn</li>
+			</ul>
+		</div>
+
+	</div>
+
+</div><!-- End Content -->
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+
+	/*]]>*/
+	</script>
+</html>

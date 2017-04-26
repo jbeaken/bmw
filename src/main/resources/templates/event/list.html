@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Events</title>
+</head>
+
+<div id="content" layout:fragment="content">
+
+	<h1>Upcoming Events at Bookmarks</h1>
+
+	<div class="row">
+
+	<div class="col-md-9 event-holder-container">
+
+		<div class="event_holder" th:each="event : ${application.layout.upcomingEvents}"><!-- Start event_holder -->
+
+			<div th:replace="::header ( ${event} )" th:if="${event.stockItem != null}"></div>
+
+			<div class="col-sm-8">
+
+				<div class="event_title" th:text="${event.stockItem.title}" th:if="${event.showName == false}"></div>
+
+				<div class="event_title" th:text="${event.name}" th:if="${event.showName == true}"></div>
+
+				<div class="event_date">
+
+				<span th:text="${#dates.format(event.startDate, 'EEEE dd MMM')}"></span>
+
+				<span th:text="${event.startTime}">></span>
+
+				</div>
+
+				<div class="event_author" th:if="${event.stockItem != null and event.stockItem.mainAuthor != null and event.showAuthor == true}">With <span th:text="${event.stockItem.mainAuthor.name}"></span></div>
+
+				<div class="event_blurb_holder" th:utext="${event.description}">
+
+				</div>
+
+				<div th:include="::footer (${event.stockItem.title}, ${event.entrancePrice})" th:if="${event.stockItem != nul}"></div>
+
+			</div>
+
+			<hr/>
+
+		</div><!-- End event_holder -->
+
+
+
+	</div><!-- end col-sm-9 -->
+
+	<!-- Right sidebar -->
+	<div class="col-md-3">
+		<div class="padd sidebar">
+		      <div class="widget hidden-xs">
+	            <h3 class="matopen">Venue</h3>
+	            <img th:src="@{/images/bookmarks-outside.jpg}" class="img-responsive"></img>
+	            <div class="matter">
+	            	<ul>
+	            		<li>1, Bloomsbury Street</li>
+	            		<li>London</li>
+	            		<li>WC1B 3QE</li>
+	            		<li class="event_map"><a href="/shop">See a map</a></li>
+	            	</ul>
+	            </div>
+	          </div>
+	     </div>
+	</div>
+
+	</div><!-- End row -->
+</div><!-- End content -->
+
+
+<!-- TEMPLATES -->
+    <div th:fragment="header ( event )" class="col-sm-4">
+        <div class="event_image_holder" th:if="${event.stockItem != null}">
+            <a th:href="@{/viewByIsbn/{isbn}/events(isbn=${event.stockItem.isbn})}">
+                <img th:src="@{/imageFiles/original/{isbn}.jpg(isbn=${event.stockItem.isbn})}" class="img-reponsive"/>
+            </a>
+        </div>
+        <div class="event_info_holder">
+            <span th:if="${event.showBookmarksAddress != null and event.showBookmarksAddress == true}">Bookmarks Bookshop<br/> 1 Bloomsbury Street, London, WC1B 3QE</span>
+        </div>
+    </div>
+
+    <div th:fragment="footer (title, price)">
+			<p th:if="${price}">Admission <span th:text="${'&pound;' + #numbers.formatDecimal(price, 1, 'POINT', 2, 'POINT')}"></span> Payable on door</p>
+      <p class="event_reserve_info">Reserve your place <a th:href="@{/event/registerForEvent(eventName=${title})}">here</a> or call <span class="event_telephone">020 7637 1848</span></p>
+    </div>
+<!-- /TEMPLATES -->
+
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+
+	/*]]>*/
+	</script>
+</html>

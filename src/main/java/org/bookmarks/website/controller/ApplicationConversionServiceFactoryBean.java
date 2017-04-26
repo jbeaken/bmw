@@ -1,0 +1,26 @@
+package org.bookmarks.website.controller;
+
+import java.util.Set;
+
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.support.FormattingConversionServiceFactoryBean;
+
+/**
+ * A central place to register application converters and formatters. 
+ */
+public class ApplicationConversionServiceFactoryBean extends FormattingConversionServiceFactoryBean {
+
+	@Override
+	public void setFormatters(Set<?> formatters) {
+		super.setFormatters(formatters);
+	}
+
+//	@Override
+//	
+//	protected void installFormatters(FormatterRegistry registry) {
+//		super.installFormatters(registry);
+//		// Register application converters and formatters
+//	}
+	
+	
+}

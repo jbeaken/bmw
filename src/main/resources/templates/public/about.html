@@ -1,0 +1,100 @@
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - About</title>
+</head>
+
+<div id="content" layout:fragment="content">
+	<div class="row">
+		<div class="col-sm-9">
+			<div class="about_header">
+				<h1>Liberate Your Mind</h1>
+			</div>
+		
+		<p class="about_paragraph">Where do you go when you want to buy a book? A union-busting corporation or a socialist bookshop?
+		Bookmarks is the largest socialist bookshop in Britain.
+		</p>
+		<p>
+		And we don&#39;t just sell from our shop in London, we go out and about to provide bookstalls
+		at events across the country, from Tolpuddle to major demonstrations. 
+		We send books across the world and offer a full mailorder service for individuals and trade unions.
+		</p>
+
+		<div id="carousel-bookmarks" class="carousel slide" data-ride="carousel">
+			  <!-- Indicators -->
+			  <ol class="carousel-indicators">
+			    <li data-target="#carousel-bookmarks" data-slide-to="0" class="active"></li>
+			    <li data-target="#carousel-bookmarks" data-slide-to="1"></li>
+			    <li data-target="#carousel-bookmarks" data-slide-to="2"></li>
+			  </ol>
+			
+			  <!-- Wrapper for slides -->
+			  <div class="carousel-inner">
+			    <div class="item active">
+			      <img th:src="@{/resources/images/bookmarks-outside.jpg}" class="img-responsive"></img>
+			      <div class="carousel-caption">
+			      </div>
+			    </div>
+			    <div class="item">
+			      <img th:src="@{/resources/images/bookmarks-inside.jpg}" class="img-responsive"></img>
+			      <div class="carousel-caption">
+			      </div>
+			    </div>
+			  </div>
+			
+			  <!-- Controls -->
+			  <a class="left carousel-control" href="#carousel-bookmarks" data-slide="prev">
+			    <span class="glyphicon glyphicon-chevron-left"></span>
+			  </a>
+			  <a class="right carousel-control" href="#carousel-bookmarks" data-slide="next">
+			    <span class="glyphicon glyphicon-chevron-right"></span>
+			  </a>
+		</div><!-- End carousel -->
+	</div><!-- End col 9 -->
+	
+	<div class="col-sm-3">
+			<h2>&#39;Bookmarks is the university for activists&#39; - Tony Benn</h2>
+			<p>
+			Bookmarks keeps alive the tradition of radical bookselling, 
+			ensuring that activists have access to the most important lessons from history as well as cutting edge political analysis.</p>
+			<p> 
+			It is your bookshop and it will exist as long as it is supported by people like you.
+			</p>
+	         <div class="sidebar_widget">
+	           <h3 class="sidebar_header">Opening Times</h3>
+	           <div class="sidebar_content">
+	            <ul>
+		         	<li>Monday : 12-7pm</li>
+					<li>Tuesday to Saturday : 10-7pm</li>
+					<li class="event_map"><a href="/shop">See a map</a></li>
+	            </ul>
+	           </div>
+	         </div>				          
+	</div>
+		
+	</div><!-- End row -->
+	<div class="row">
+		<div class="col-sm-6">
+			<p>
+				Our range of books covers politics, economics, trade unionism, labour history, the environment, black struggle, women, culture, fiction, radical kid&#39;s books and much more. And we don&#39;t just sell books, we publish them too- books that answer the big questions that socialists and trade unionists are asking.
+			</p>		
+		</div>
+		<div class="col-sm-6">
+				<p>
+				The massive anti-union booksellers like Amazon can offer the sorts of discounts smaller shops cannot match. But they do this by attacking their own workers, avoiding corporation tax and squeezing authors and publishers. That&#39;s not how we operate. And the major booksellers cannot match the guidance and expertise that our unionised staff provide.
+			</p>
+		</div>
+	</div>	
+
+</div><!-- End content -->
+
+	<script layout:fragment="top_scripts">
+	/*<![CDATA[*/
+		$(function() {
+			$('.carousel').carousel();
+		});
+	/*]]>*/
+	</script>
+</html>
+

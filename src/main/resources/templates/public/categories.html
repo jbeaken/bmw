@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - About</title>
+	<style>
+	
+	</style>
+</head>
+<!-- Search Categories -->
+<div id="content" layout:fragment="content">
+<div class="row">
+	<div id="categoryHeader">
+		<h1>Our full list of categories</h1>
+	</div>
+	<div class="col-sm-4">
+           <ul>
+           	<li th:each="i : ${#numbers.sequence( 0, 10)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='fullList')}" th:text="${application.categories[i].name}"></a></li>
+           </ul>	
+	</div>
+	<div class="col-sm-4">
+           <ul>
+           	<li th:each="i : ${#numbers.sequence( 11, 21)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='fullList')}" th:text="${application.categories[i].name}"></a></li>
+           </ul>	
+	</div>
+	<div class="col-sm-4">
+           <ul>
+           	<li th:each="i : ${#numbers.sequence( 22, application.totalNoOfCategories - 1)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='fullList')}" th:text="${application.categories[i].name}"></a></li>
+           </ul>	
+	</div>		
+</div><!-- End row -->
+		
+
+</div><!-- End content -->
+
+	<script layout:fragment="top_scripts">
+	/*<![CDATA[*/
+		$(function() {
+		});
+	/*]]>*/
+	</script>
+</html>
+

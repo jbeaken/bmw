@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="decorator/public_sidebar">
+<head>
+	<title>Bookmarks - View Stock Item</title>  
+	<link type="text/css" th:href="@{/css/prettyPhoto.css}" rel="stylesheet"/>  
+	<script th:src="@{/js/jquery.prettyPhoto.js}"></script>
+	<style type="text/css">
+	h1 {
+		margin: 10px 0;
+		font-family: inherit;
+		font-weight: bold;
+		line-height: 40px;
+		color: inherit;
+		text-rendering: optimizelegibility;
+	}
+	ACCEPTURL=http://socialistworker.co.uk/donation/complete123678907aS12345AMOUNT=10123678907aS12345CURRENCY=GBP123678907aS12345EMAIL=sdf@asdf.com123678907aS12345LANGUAGE=en_US123678907aS12345ORDERID=qwer123678907aS12345OWNERZIP=SW3 6TG123678907aS12345OWNERADDRESS=24, Whatem St, Lewisham123678907aS12345OWNERCTY=London123678907aS12345OWNERTELNO=0207 645 4543123678907aS12345PSPID=epdq1028499123678907aS12345
+	</style>
+	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha512.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+		function submitForm() {
+			$('input#ORDERID').val(Math.random());
+			var acceptURl = $('input[name=ACCEPTURL]').val();
+			console.log(acceptURl);
+			var stringbuilder = "";
+			var hidden_fields = $( 'input:hidden' ).each(function() {
+				var name =  $(this).attr("name");
+				var value = $(this).val();
+				if(typeof name !== "undefined") {
+					if(name != 'SHASIGN') {
+						stringbuilder = stringbuilder + name + "=" + value + '123678907aS12345'
+						console.log($(this).val());
+					}
+				}
+			});
+			alert("stringbuilder = " + stringbuilder);
+	    	var hash = CryptoJS.SHA512(stringbuilder);
+	    	alert(hash);
+	    	$('input#SHASIGN').val(hash);
+	    	alert( $('input#SHASIGN').val() );
+	    	$('#securityForm').submit();
+		}
+	</script>
+</head>
+<div id="content" layout:fragment="content">
+	<div class="col-md-9">
+		<div class="row">
+			<div class="stockitem_content_holder col-md-8">
+ 			<form method="post" id="securityForm" action="https://mdepayments.epdq.co.uk/ncol/test/orderstandard.asp">
+                <!-- general parameters -->
+                <input type="hidden" name="ACCEPTURL" value="http://socialistworker.co.uk/donation/complete"/>
+                <input type="hidden" name="AMOUNT" value="10"/>
+                <input type="hidden" name="CURRENCY" value="GBP"/>
+                <input type="hidden" name="EMAIL" value="sdf@asdf.com"/>
+                <input type="hidden" name="LANGUAGE" value="en_US"/>
+                <input type="hidden" name="ORDERID" id="ORDERID" value=""/>
+                <input type="hidden" name="ORDERSHIPMETH" value="Europe"/>
+                <input type="hidden" name="OWNERADDRESS" value="24, Whatem St, Lewisham"/>
+                <input type="hidden" name="OWNERCTY" value="London"/>
+                <input type="hidden" name="OWNERTELNO" value="0207 645 4543"/>
+                <input type="hidden" name="OWNERZIP" value="SW3 6TG"/>
+                <input type="hidden" name="PSPID" value="epdq1028499"/>
+                <button type="button" onclick="submitForm()" class="btn">Submit</button>
+			</form>
+			</div><!--end col-md-8 -->
+		</div><!-- end row -->
+		<hr/>
+		<!-- AddThis Button BEGIN -->
+		
+	</div><!-- end content col-md-9 -->
+	<div class="col-md-3" style="border-left: 1px solid #CCC;">
+							
+	</div>
+</div>
+
+<script layout:fragment="bottom_scripts">
+/*<![CDATA[*/
+
+/*]]>*/
+</script>
+
+</html>

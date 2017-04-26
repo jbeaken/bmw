@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>[[ ${'Bookmarks ' + stockItem.htmlTitle} ]]</title>
+
+	<meta name="Description" th:attr="content=${'Bookmarks ' + stockItem.htmlTitle + ' ' + stockItem.reviewShort}" />
+
+	<meta property="og:title" th:attr="content=${stockItem.title}" />
+	<meta property="og:type" content="article" />
+	<meta property="og:image" th:attr="content=${stockItem.originalImageUrl}" />
+	<meta property="og:url" th:attr="content=${'http://bookmarksbookshop.co.uk/view/' + stockItem.id + '/x'}" />
+	<meta property="og:description" th:attr="content=${stockItem.htmlTitle + ' ' + stockItem.reviewShort}" />
+
+	<link th:href="@{/resources/css/animations/animations.css}" rel="stylesheet" />
+
+	<style type="text/css">
+
+	hr {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border: 0;
+		border-top: 1px solid #C2BEBE;
+	}
+
+	</style>
+	<style th:if="${stockItem.showVerticalImage}">
+		div.stockitem_image_holder, div.stockitem_content_holder, .view_img {
+			width : 100%;
+		}
+	</style>
+</head>
+<div id="content" layout:fragment="content">
+	<div class="col-md-9" itemscope="itemscope" itemtype="http://schema.org/Book">
+		<div class="row">
+			<div class="stockitem_image_holder col-sm-5">
+				<a th:if="${stockItem.hasImage == true}"><img th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${stockItem.imageFilename})}" class="img-responsive img-polaroid view_img" /></a>
+				<img th:if="${stockItem.hasImage == false}" th:src="@{/images/no_image_available.jpg}" />
+				<meta th:if="${stockItem.hasImage == true}" itemprop="image" th:attr="content=${stockItem.originalImageUrl}"></meta>
+			</div>
+
+			<div class="stockitem_content_holder col-sm-7">
+
+				<span class="view_stock_item_title" itemprop="name" th:text="${stockItem.title}"></span>
+
+				<div itemprop="author" th:if="${#lists.isEmpty(stockItem.authors) == false}">
+					<span class="stock_item_field_description">By </span>
+					<a th:each="author : ${stockItem.authors}" th:href="@{/stockItem/searchByAuthor(author.id=${author.id}, author.name=${author.name})}">[[${author.name}]]&nbsp;&nbsp;</a>
+				</div>
+
+				<div>
+					<span class="stock_item_field_description" itemprop="price">Price :</span> <span class="stock_item_price">&pound;</span><span class="stock_item_price" th:text="${#numbers.formatDecimal(stockItem.sellPrice,1,2)}"/> &amp; postage in UK <span class="stock_item_price">&pound;</span><span class="stock_item_price"  th:text="${#numbers.formatDecimal(stockItem.fullPostage,1,2)}"/> (or free collection)
+				</div>
+
+				<div>
+					<span class="stock_item_field_description">Availability :</span> <span class="in_stock" th:text="${stockItem.availabilityMessage}"></span>
+					 <link itemprop="availability" href="http://schema.org/InStock" />
+				</div>
+
+				<hr/>
+
+				<div th:if="${stockItem.publishedDate != null}">
+					<span class="stock_item_field_description">Published Date :</span>
+					<span itemprop="datePublished" th:text="${#dates.format(stockItem.publishedDate, 'dd MMM yyyy')}"></span>
+				</div>
+
+				<div>
+					<span class="stock_item_field_description">Published By </span>
+					<a th:href="@{/stockItem/searchByPublisher(publisher.id=${stockItem.publisher.id}, publisher.name=${stockItem.publisher.name})}" th:text="${stockItem.publisher.name}"></a>
+				</div>
+
+				<div>
+					<span class="stock_item_field_description">ISBN :</span> <span itemprop="isbn" th:text="${stockItem.isbn}"/>
+				</div>
+
+				<div>
+					<span class="stock_item_field_description">Category :</span> <a th:href="@{/stockItem/searchByCategory(category.id=${stockItem.category.id}, category.name=${stockItem.categoryName})}"><i class="icon-tag icon-"></i> <span th:text="${stockItem.categoryName}"></span></a>
+				</div>
+
+				<div>
+					<span class="stock_item_field_description">Format :</span> <span th:text="${stockItem.whatIsIt}"/>
+				</div>
+
+				<a class="btn btn-large btn-danger" style="margin-top: 20px" th:attr="onclick=${'addStockItemToBasket(' + stockItem.id + ')'}">Add To Basket <span class="glyphicon glyphicon-shopping-cart"></span></a>
+
+				<a class="btn btn-large btn-danger" style="margin-top: 20px" target="_blank" th:if="${stockItem.ebookTurnaroundUrl != null}" th:attr="href=${stockItem.ebookTurnaroundUrl}">Buy ebook download <span class="glyphicon glyphicon glyphicon-book"></span></a>
+				<!--
+				<a class="btn btn-large btn-warning" style="margin-top: 20px" th:attr="onclick=${'showReview(' + stockItem.id + ')'}">Write a Review <span class="glyphicon glyphicon-shopping-cart"></span></a>
+				 -->
+
+			</div><!--end col-md-7 -->
+		</div><!-- end row -->
+
+		<hr/><!--
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_xclick" />
+			<input type="hidden" name="business" value="info@bookmarksbookshop.co.uk" />
+			<input type="hidden" name="item_name" value="Bookmarks Stock" />
+			<input type="hidden" name="amount" value="1" />
+			<input type="hidden" name="currency_code" value="GBP" />
+			<input type="hidden" name="no_shipping" value="1" />
+			<input type="hidden" name="return" value="http://www.amazon.co.uk" />
+			<input type="hidden" name="cancel_return" value="http://bookmarksbookshop.co.uk" />
+			<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online." />
+			<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+			</form>
+
+-->
+		<!-- ALERT IS SECOND HAND -->
+		<div class="alert alert-danger fade in" th:if="${stockItem.availability.displayName == 'Out of print'}">
+	        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	        <h4>Notice! This book is only available as second hand</h4>
+	        <p>The price <span class="stock_item_price">&pound;</span><span class="stock_item_price" th:text="${#numbers.formatDecimal(stockItem.sellPrice,1,2)}"/> is an accurate estimate of the price of this item but there is a small chance it will change. We will contact you before taking any money from your card or account if this happens.</p>
+	        <p>As with all second hand, we will contact you to give you an idea of the condition of the item before charging your card or account</p>
+      	</div>
+
+      	<!-- REVIEW -->
+		<div class="view_stock_item_review" th:if="${stockItem.reviewAsHTML != null}">
+			<p th:utext="${stockItem.reviewAsHTML}"></p>
+			<hr/>
+		</div>
+
+		<div class="view_stock_item_review" th:if="${stockItem.reviewAsHTML == null and stockItem.reviewAsText != null}">
+			<p th:text="${stockItem.reviewAsText}"></p>
+			<hr/>
+		</div>
+
+
+		<!-- ALERT IS AVAILABLE 2ND HAND -->
+		<div class="alert alert-danger fade in" th:if="${stockItem.availability.displayName == 'Nonsence of print' and stockItem.priceThirdPartySecondHand != null}">
+	        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	        <h4>Notice! This book is also available as second hand</h4>
+	        <p>The second hand price is <span class="stock_item_price">&pound;</span><span class="stock_item_price" th:text="${#numbers.formatDecimal(stockItem.priceThirdPartySecondHand,1,2)}"/></p>
+	        <p>As with all second hand, we will contact you to give you an idea of the condition of the item before charging your card or account</p>
+	        <p>
+	          	<button type="button" class="btn btn-danger">Order as second hand</button>
+        	</p>
+      	</div>
+
+		<!-- AddThis Button BEGIN -->
+		<div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+			<a class="addthis_button_preferred_1"></a>
+			<a class="addthis_button_preferred_2"></a>
+			<a class="addthis_button_preferred_3"></a>
+			<a class="addthis_button_preferred_4"></a>
+			<a class="addthis_button_compact"></a>
+			<a class="addthis_counter addthis_bubble_style"></a>
+		</div>
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-525e9d111f24bc49"></script>
+		<!-- AddThis Button END -->
+
+	</div><!-- end content col-md-9 -->
+
+	<!-- Right sidebar -->
+
+	<div class="col-md-3" style="border-left: 1px solid #CCC;">
+		<span class="view_sidebar_right_header">Other titles of interest</span>
+		<div th:each="interested : ${interesting}" th:unless="${interested.id == stockItem.id}">
+			<a th:href="@{/view/{id}/{url}(id=${interested.id}, url=${interested.cleanTitleForUrl})}">
+				<div th:text="${interested.title}" style="font-weight: bold;"></div>
+				<img class="animate-in" th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${interested.imageFilename})}" width="30%" th:if="${interested.imageFilename}"/>
+			</a>
+			<hr/>
+		</div>
+		<span class="view_sidebar_right_header" th:if="${authorsOtherBooks.size() > 0}">Titles by the author(s)</span>
+		<div th:each="stockItemForAuthor : ${authorsOtherBooks}">
+			<a th:href="@{/view/{id}/{url}(id=${stockItemForAuthor.id}, url=${stockItemForAuthor.cleanTitleForUrl})}">
+				<div th:text="${stockItemForAuthor.title}" style="font-weight: bold;"></div>
+				<img th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${stockItemForAuthor.imageFilename})}" width="30%" th:if="${stockItemForAuthor.imageFilename}" />
+			</a>
+			<hr/>
+		</div>
+	</div>
+</div>
+
+<script layout:fragment="bottom_scripts">
+/*<![CDATA[*/
+	$(document).ready(function() {
+		$(".animate-in").addClass("animated fadeInLeft");
+	});
+/*]]>*/
+</script>
+
+</html>

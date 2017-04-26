@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Brochure</title>
+</head>
+
+<div id="content" layout:fragment="content">
+	<div class="row">
+		<div class="col-sm-9">
+			<div class="about_header">
+				<h1>Download Our Brochure</h1>
+			</div>
+			
+			<a th:href="@{/downloadBrochure}">Click Here to Download Our Brochure</a>
+		</div>
+	</div>
+</div><!-- End content -->
+
+	<script layout:fragment="top_scripts">
+	/*<![CDATA[*/
+
+	/*]]>*/
+	</script>
+</html>
+

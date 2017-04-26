@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+    <title>Bookmarks Home Page</title>
+	<meta property="og:image" content="http://bookmarksbookshop.co.uk/images/bookmarks-outside-facebook.jpg" />
+	<meta property="og:description" content="Bookmarks has been publishing books for over 40 years. Every year we publish a selection of books and pamphlets that address the key issues facing activists and trade unionists. Many of our older publications are available from our secondhand section." />
+</head>
+
+<div class="content" layout:fragment="content">
+
+	<div class="row">
+		<div class="col-sm-12">
+
+			<div class="bouncy_items">
+
+				<div class="bouncies">
+					<div class="col-md-2 col-sm-3 col-xs-4 bouncy_item" th:each="i : ${#numbers.sequence( 0, 17)}">
+					<div>
+						<a th:href="@{/view/{id}/{url}(id=${bouncies[i].id}, url=${bouncies[i].cleanTitleForUrl})}" class="bouncy-image" th:attr="title=${bouncies[i].bouncyTitle}">
+							<img th:src="@{/imageFiles/bouncy/{imageFilename}(imageFilename=${bouncies[i].imageFilename})}" class="img-responsive" />
+						</a>
+					</div>
+						<h3 class="product-name"><a th:href="@{/view/{id}/{url}(id=${bouncies[i].id}, url=${bouncies[i].cleanTitleForUrl})}" th:attr="title=${bouncies[i].bouncyTitle}" th:text="${bouncies[i].bouncyTitle}"></a></h3>
+					</div>
+				</div>
+
+			</div><!-- End bouncy_items -->
+
+		</div>
+	</div><!-- End bouncies row -->
+
+	<div class="row categories">
+		<div class="col-sm-4">
+	           <ul>
+	           	<li th:each="i : ${#numbers.sequence( 0, 10)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='home')}" th:text="${application.categories[i].name}"></a></li>
+	           </ul>
+		</div>
+		<div class="col-sm-4">
+	           <ul>
+	           	<li th:each="i : ${#numbers.sequence( 11, 21)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='home')}" th:text="${application.categories[i].name}"></a></li>
+	           </ul>
+		</div>
+		<div class="col-sm-4">
+	           <ul>
+	           	<li th:each="i : ${#numbers.sequence( 22, application.totalNoOfCategories - 1)}"><a th:href="@{/stockItem/searchByCategory(category.id=${application.categories[i].id}, category.name=${application.categories[i].name}, flow='home')}" th:text="${application.categories[i].name}"></a></li>
+	           </ul>
+		</div>
+	</div>
+
+	<div class="row">
+
+		<div class="col-sm-3"><a th:href="@{/view/2943/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781905192786.jpg}" /></a></div>
+
+    <div class="col-sm-3">
+      <div>
+        <a th:href="@{/view/2944/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781905192113.jpg}" style="width : 57%" /></a>
+      </div>
+      <div style="padding-top : 5px;">
+        <a th:href="@{/view/39896/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026773.jpg}" style="width : 57%" /></a>
+      </div>
+    </div>
+
+		<div class="col-sm-3">
+      <div>
+        <a th:href="@{/view/2935/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781905192038.JPG}" style="width : 57%" /></a>
+      </div>
+      <div style="padding-top : 5px;">
+        <a th:href="@{/view/42362/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781910885086.jpg}" style="width : 57%" /></a>
+      </div>
+    </div>
+
+		<div class="col-sm-3"><a th:href="@{/view/2970/x}"><img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781905192083.jpg}" /></a></div>
+
+	</div>
+
+	<div class="row home_bookmarks_highlights">
+		<a th:href="@{/view/41375/x}">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026971.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				As austerity bites and new debates about oppression rage, Judith Orr steers a path through the history and future of the fight for women&#8217;s liberation.
+			</div>
+		</a>
+		<a href="/view/41821/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781910885017.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				Slorach’s groundbreaking and accessible book will demonstrate the relevance of a Marxist understanding of disability to a whole new generation of disability activists
+			</div>
+		</a>
+		<a href="/view/41133/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026582.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				This book seeks to challenge the idea that racism is inevitable by taking a critical look at the origins and history of racism in Britain and abroad.
+			</div>
+		</a>
+	</div>
+
+	<div class="row home_bookmarks_highlights">
+		<a th:href="@{/view/34495/x}">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026520.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				Martin Empson draws on a Marxist understanding of history to grapple with the contradictory potential of our relationship with our environment.
+			</div>
+		</a>
+		<a href="/view/33730/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026391.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				The remarkable memoir by Marek Edelman, member of the Warsaw Ghetto Resistance five-person command team
+			</div>
+		</a>
+		<a href="/view/33676/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026384.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				This book seeks to challenge the idea that racism is inevitable by taking a critical look at the origins and history of racism in Britain and abroad.
+			</div>
+		</a>
+	</div>
+
+	<div class="row home_bookmarks_highlights">
+		<a href="/viewByIsbn/9781909026681/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026681.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				Marx's Capital is back where it belongs, at the centre of debate about Marxism and its purchase on the contemporary world.
+			</div>
+		</a>
+		<a href="/viewByIsbn/9781909026629/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026629.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				As Dave Sherry shows in this accessible history, working class people suffered during WWI, but also began to fight back in the Russian and German revolutions.
+			</div>
+		</a>
+		<a href="/viewByIsbn/9781909026759/x">
+			<div class="col-sm-2">
+				<img class="img-responsive img-polaroid" th:src="@{/imageFiles/150/9781909026759.jpg}" />
+			</div>
+			<div class="col-sm-2">
+				The general strike of 1842, the first of its kind, involved up to half a million workers from Dundee to South Wales to Cornwall.
+			</div>
+		</a>
+	</div>
+
+</div><!-- End content -->
+
+<script layout:fragment="bottom_scripts">
+	  /*<![CDATA[*/
+		$(document).ready(function() {
+			$(".bouncy_item").hover(function(){
+				$(this).find("img").stop().animate({marginTop: "-16px"});
+				$(this).find("h3").stop().css({display:"block"},300);
+			}, function(){
+				$(this).find("img").stop().animate({marginTop: "0px"});
+				$(this).find("h3").stop().css({display:"none"},100)
+			});
+
+			$('.carousel').carousel();
+
+			//Highlight active in nav bar
+			var url = window.location.href;
+			//console.log(url);
+			if(url.indexOf("localhost") != -1) {
+				url = url.substring(22);
+			}
+			if(url.indexOf("109.") != -1) {
+				url = url.substring(22);
+			}
+			//console.log(url);
+			if(url == '') {
+				//special case home
+				$('ul.nav a[href="/"]').parent().addClass('active');
+			} else {
+				$('ul.nav a[href*="'+ url +'"]').parent().addClass('active');
+			}
+		});
+		/*]]>*/
+</script>
+
+</html>

@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+layout:decorate="~{decorator/public}">
+<head>
+	<title>Bookmarks - Event Registration</title>
+	<style>
+	
+	</style>
+</head>
+<!-- Search Categories -->
+<div id="content" layout:fragment="content">
+
+	<h1>Please enter details to register for the event <span th:text="${eventRegistrationForm.eventName}"></span></h1>
+	
+	<form th:action="@{/event/registerForEvent}" th:object="${eventRegistrationForm}" method="post" role="form">
+		<input type="hidden" th:field="*{eventName}"/>
+		<div class="row">
+			<div>
+				<div class="form-group">
+					<label for="name">Your Name</label>
+					<input th:field="*{name}" type="text" id="name" class="form-control" placeholder="your name" required="required" autofocus="autofocus" />
+				</div>
+								
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input th:field="*{email}" class="form-control" type="email" placeholder="email" required="required" />
+				</div>
+				
+				<div class="form-group">
+					<label for="email">Telephone</label>
+					<input th:field="*{telephone}" class="form-control" type="text" placeholder="optional" />
+				</div>			
+				
+				<div class="form-group">
+					<label for="information">Any other information</label>
+					<textarea th:field="*{information}" rows="5" class="form-control" placeholder="Any other information" />
+				</div>			
+	 		</div>
+	 	</div>
+	 	
+		<hr/>
+		
+		<div class="row">
+			<button type="submit" class="btn btn-danger">Reserve Your Place</button>
+		</div> 	
+	</form>
+</div><!-- //content -->
+
+	<script layout:fragment="bottom_scripts">
+	/*<![CDATA[*/
+	
+	/*]]>*/
+	</script>
+</html>
+

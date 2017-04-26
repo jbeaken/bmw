@@ -1,0 +1,53 @@
+<div class="features">
+      <div class="row">
+         <div class="col-sm-4">
+            <!-- Features #1 -->
+            <div class="padding-f">
+               <!-- Heading with font awesome icon -->
+               <h4><span class="glyphicon glyphicon-tag"></span> Open An Account</h4>
+               <!-- Para -->
+               <p>You can help to secure the future of radical bookselling by opening a Bookmarks Account.</p> 
+               <p>We ask that you pay in a minimum of &pound;10 a month by Standing Order which you can then spend on books at any time.</p>
+               <p>We will also give you 10% off all books or free postage anywhere in the UK.</p>
+               <!-- Read more Button -->
+               <a href="/account">Click Here</a>
+            </div>
+         </div>
+         <!--/* This code will be removed at thymeleaf parsing time! 
+         <div class="col-sm-4">
+            <div class="padding-m">
+               <h4><span class="glyphicon glyphicon-music"></span> Join Our Club</h4>
+               <p>In return for depositing a fixed sum, you will receive free copies of the latest books from Bookmarks Publications and Redwords, hot off the press.</p>
+               <ul>
+                  <li><strong>&pound;250</strong> - Free books for 5 years</li>
+                  <li><strong>&pound;500</strong> - Free books for 7 years</li>
+                  <li><strong>&pound;750</strong> - Free books for 10 years</li>
+               </ul>
+               <a th:href="@{/stockItem/searchByType(type=${'CD'})}" class="btn btn-default">Read More</a>
+            </div>
+         </div>
+         */-->
+         
+         <div class="col-sm-4">
+            <div class="padding-m">
+               <h4><span class="glyphicon glyphicon-music"></span> Merchandise</h4>
+               <p>We sell much more than books, check out our posters, mugs and other stuff here</p>
+               <ul>
+                  <li><a th:href="@{/stockItem/searchByType(type='POSTER')}">Posters</a></li>
+                  <li><a th:href="@{/stockItem/searchByType(type='MUG')}">Mugs</a></li>
+                  <li><a th:href="@{/stockItem/searchByType(type='CARD')}">Cards</a></li>
+               </ul>
+            </div>
+         </div>         
+         
+         <div class="col-sm-4">
+            <!-- Features #3 -->
+            <div class="padding-l">
+               <h4><span class="glyphicon glyphicon-film"></span> Bookmarks Publishing</h4>
+               <p>Browse here for books from Bookmarks Publications and Redwords.</p>
+               <p>Bookmarks has been publishing books for over 40 years. Every year we publish a selection of books and pamphlets that address the key issues facing activists and trade unionists. Many of our older publications are available from our secondhand section.</p>
+               <a th:href="@{/stockItem/searchByPublisherOrderByPublishedDate(publisher.id=725, publisher.name='Bookmarks')}">See Our Publications</a>
+            </div>
+         </div>
+      </div>
+   </div><!-- End features -->

@@ -1,0 +1,7 @@
+# Robots file for https://bookmarksbookshop.co.uk/
+
+ # Applies to all robots
+ User-agent: *
+
+ # Block specific pages
+ Disallow: /website/*
