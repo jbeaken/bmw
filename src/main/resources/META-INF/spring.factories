@@ -1,2 +1,2 @@
 #bootstrap thymeleaf 3 config
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.bookmarks.website.config.ThymeleafConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.bookmarks.website.config.ThymeleafConfiguration

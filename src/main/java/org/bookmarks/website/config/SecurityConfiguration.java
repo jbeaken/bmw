@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.ChannelSec
 @Configuration
 @EnableWebSecurity
 //@PropertySource("classpath:spring/application.dev.properties")
-public class BookmarksSecurity extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private Environment environment;

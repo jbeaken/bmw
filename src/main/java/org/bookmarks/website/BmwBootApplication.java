@@ -33,12 +33,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
-//@Configuration
-//@ImportResource({ "classpath:spring/tools-config.xml" })
-//@EnableJpaRepositories("org.bookmarks.website.repository")
-//@ComponentScan(basePackages = { "org.bookmarks.website" }, excludeFilters = @ComponentScan.Filter(value = Controller.class, type = FilterType.ANNOTATION))
 @SpringBootApplication
-//@ComponentScan(basePackages = { "org.bookmarks.website" } )
 public class BmwBootApplication extends SpringBootServletInitializer {
 	
 	public static void main(String[] args) {
@@ -69,68 +64,4 @@ public class BmwBootApplication extends SpringBootServletInitializer {
 
 		return mailSender;
 	}
-
-	/**
-	 * Encyrption
-	 */
-
-	@Bean
-	public BouncyCastleProvider bcProvider() {
-		return new BouncyCastleProvider();
-	}
-
-	@Bean
-	public StandardPBEStringEncryptor jsonEcryptor() {
-		StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
-		standardPBEStringEncryptor.setAlgorithm(environment.getProperty("json.encrypt.algorithm"));
-		standardPBEStringEncryptor.setPassword(environment.getProperty("json.encrypt.password"));
-		standardPBEStringEncryptor.setProvider(bcProvider());
-
-		return standardPBEStringEncryptor;
-	}
-
-	@Bean
-	public HibernatePBEStringEncryptor hibernateStringEncryptor() {
-		HibernatePBEStringEncryptor hibernatePBEStringEncryptor = new HibernatePBEStringEncryptor();
-		hibernatePBEStringEncryptor.setRegisteredName("strongHibernateStringEncryptor");
-		hibernatePBEStringEncryptor.setEncryptor(dbEncryptor());
-
-		return hibernatePBEStringEncryptor;
-	}
-
-	@Bean
-	public StandardPBEStringEncryptor dbEncryptor() {
-		StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
-		standardPBEStringEncryptor.setAlgorithm(environment.getProperty("db.encrypt.algorithm"));
-		standardPBEStringEncryptor.setPassword(environment.getProperty("db.encrypt.password"));
-		standardPBEStringEncryptor.setProvider(bcProvider());
-
-		return standardPBEStringEncryptor;
-	}
 }
-
-@Configuration
-class WebMvcConfiguration extends WebMvcConfigurerAdapter {
-	
-	@Autowired
-	private Environment environment;
-
-	@Override
-	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-		
-		registry.addResourceHandler("/resources/**")
-			.addResourceLocations("classpath:/static/")
-			.setCachePeriod(60 * 60 * 24 * 365) /* one year */
-			.resourceChain( environment.acceptsProfiles("prod") ? true : false )
-			.addResolver(
-                    new VersionResourceResolver().addContentVersionStrategy("/**"));
-
-		if (!environment.acceptsProfiles("prod")) {
-			registry.addResourceHandler("/imageFiles/**").addResourceLocations("file:/home/bookmarks/images/");
-		}
-		 
-		super.addResourceHandlers(registry);
-	}
-
-}
-

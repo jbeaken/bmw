@@ -37,7 +37,7 @@ import org.springframework.context.annotation.FilterType;
 @ConditionalOnClass({SpringTemplateEngine.class})
 @EnableConfigurationProperties({ThymeleafProperties.class})  //no sense rolling our own.
 @AutoConfigureAfter({WebMvcAutoConfiguration.class})
-public class ThymeleafConfig implements ApplicationContextAware, EnvironmentAware {
+public class ThymeleafConfiguration implements ApplicationContextAware, EnvironmentAware {
 	
 	private ApplicationContext applicationContext;
 
