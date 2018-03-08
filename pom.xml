@@ -6,7 +6,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>bmw-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>bmw-boot</name>
 	<description>Demo project for Spring Boot</description>
@@ -112,7 +112,7 @@
 		<!-- Hibernate Search -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search</artifactId>
+			<artifactId>hibernate-search-orm</artifactId>
 			<version>${hibernate.search}</version>
 		</dependency>
 
