@@ -1,14 +1,17 @@
 package org.bookmarks.website.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
+import nz.net.ultraq.thymeleaf.LayoutDialect;
+
 @Configuration
-public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+public class WebMvcConfiguration implements WebMvcConfigurer {
 	
 	@Autowired
 	private Environment environment;
@@ -26,8 +29,11 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 		if (!environment.acceptsProfiles("prod")) {
 			registry.addResourceHandler("/imageFiles/**").addResourceLocations("file:/home/bookmarks/images/");
 		}
-		 
-		super.addResourceHandlers(registry);
+	}
+	
+	@Bean
+	public LayoutDialect layoutDialect() {
+	  return new LayoutDialect();
 	}
 
 }

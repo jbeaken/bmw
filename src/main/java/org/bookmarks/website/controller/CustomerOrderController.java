@@ -1,6 +1,7 @@
 package org.bookmarks.website.controller;
 
 import java.util.Date;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -17,15 +18,11 @@ import org.bookmarks.website.domain.PaymentType;
 import org.bookmarks.website.domain.StockItem;
 import org.bookmarks.website.repository.CustomerRepository;
 import org.bookmarks.website.repository.StockItemRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
@@ -35,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -63,7 +59,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	@RequestMapping(value = "/{stockItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody StockItem addStockItemToCustomerOrder(@PathVariable("stockItemId") Long stockItemId, HttpSession session) {
 
-		StockItem stockItem = stockItemRepository.findOne(stockItemId);
+		Optional<StockItem> optional = stockItemRepository.findById(stockItemId);
+		
+		StockItem stockItem = optional.get();
 
 		logger.info("Adding {} to customer order", stockItem);
 
@@ -76,7 +74,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	@RequestMapping(value = "/addStockItemToCustomerOrderForMobile", method = RequestMethod.GET)
 	public String addStockItemToCustomerOrderForMobile(Long id, HttpSession session) {
 
-		StockItem stockItem = stockItemRepository.findOne(id);
+		Optional<StockItem> optional = stockItemRepository.findById(id);
+		
+		StockItem stockItem = optional.get();
 
 		CustomerOrder order = getCustomerOrder(session);
 		order.addOrderLine(stockItem);

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -57,7 +58,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @RequestMapping("/website")
 @Controller
 public class WebsiteController {
@@ -91,7 +91,6 @@ public class WebsiteController {
 
 	@Autowired
 	private OrderLineRepository orderLineRepository;
-
 
 	final static Logger logger = LoggerFactory.getLogger(WebsiteController.class);
 
@@ -161,7 +160,7 @@ public class WebsiteController {
 			if (!stockItem.getPutOnWebsite()) { // Should it be deleted?
 				logger.info("Set to remove from website");
 				// Check it exists
-				if (stockItemRepository.exists(stockItem.getId())) {
+				if (stockItemRepository.existsById(stockItem.getId())) {
 					logger.info("Deleting stock item....");
 
 					try {
@@ -170,7 +169,7 @@ public class WebsiteController {
 
 						orderLineRepository.flush();
 
-						stockItemRepository.delete(stockItem.getId());
+						stockItemRepository.deleteById(stockItem.getId());
 
 						logger.info("... success!");
 					} catch (Exception e) {
@@ -195,9 +194,9 @@ public class WebsiteController {
 				stockItem.setAvailability(Availability.NOT_YET_PUBLISHED);
 			}
 
-			//Ebook (hack)
-			if(stockItem.getEbookTurnaroundUrl() != null && stockItem.getEbookTurnaroundUrl().isEmpty()) {
-				stockItem.setEbookTurnaroundUrl( null );
+			// Ebook (hack)
+			if (stockItem.getEbookTurnaroundUrl() != null && stockItem.getEbookTurnaroundUrl().isEmpty()) {
+				stockItem.setEbookTurnaroundUrl(null);
 			}
 
 			// Category
@@ -212,7 +211,9 @@ public class WebsiteController {
 			// update bmw.stock_item si set si.parent_category_id =
 			// si.category_id where si.parent_category_id is null;
 
-			Category category = categoryRepository.findOne(stockItem.getCategory().getId());
+			Optional<Category> optional = categoryRepository.findById(stockItem.getCategory().getId());
+			Category category = optional.get();
+
 			if (category.getParent() != null) {
 				stockItem.setParentCategoryId(category.getParent().getId());
 			} else {
@@ -318,7 +319,6 @@ public class WebsiteController {
 		return encryptedJson;
 	}
 
-
 	protected void initialise(boolean evictCache, boolean createBouncyImages) {
 		logger.info("*************************************************");
 		logger.info("Initialising layout with bouncies and events, evictCache = {}, createBouncyImages = {}", evictCache, createBouncyImages);
@@ -344,7 +344,7 @@ public class WebsiteController {
 
 			List<StockItem> merchandiseStockItems = stockItemRepository.getMerchandise();
 
-			if( createBouncyImages == true ) {
+			if (createBouncyImages == true) {
 				createBouncyImages(stockItems);
 				createBouncyImages(merchandiseStockItems);
 			}
@@ -382,7 +382,10 @@ public class WebsiteController {
 		context.setAttribute("categories", categories);
 		context.setAttribute("totalNoOfCategories", categories.size());
 
-		StockItem bookOfTheWeek = stockItemRepository.findOne(33729l);
+		Optional<StockItem> optional = stockItemRepository.findById(33729l);
+
+		StockItem bookOfTheWeek = optional.get();
+
 		context.setAttribute("bookOfTheWeek", bookOfTheWeek);
 	}
 
@@ -399,7 +402,7 @@ public class WebsiteController {
 			BufferedImage image = null;
 
 			try {
-				File imageFile = new File( imageFileLocation );
+				File imageFile = new File(imageFileLocation);
 				if (!imageFile.exists()) {
 					imageFile.createNewFile();
 				}
@@ -469,9 +472,9 @@ public class WebsiteController {
 		return "success";
 	}
 
-/**
-* Using json sent from beans, deserialise and update database
-**/
+	/**
+	 * Using json sent from beans, deserialise and update database
+	 **/
 	@RequestMapping(value = "/updateReadingLists")
 	@Transactional(rollbackFor = ChipsException.class)
 	public @ResponseBody String updateReadingLists(String readingListsAsJson, String beansSha512, String message) throws ChipsException, JsonParseException, JsonMappingException, IOException {
@@ -482,7 +485,7 @@ public class WebsiteController {
 
 		logger.info(readingListsAsJson);
 
-		Collection<ReadingList> readingLists = mapper.readValue(readingListsAsJson, List.class );
+		Collection<ReadingList> readingLists = mapper.readValue(readingListsAsJson, List.class);
 
 		logger.info("About to persist " + readingLists.size() + " reading lists");
 
@@ -491,7 +494,7 @@ public class WebsiteController {
 		readingListRepository.flush();
 
 		// Check existance of all stocks and images of bouncies
-		for(ReadingList rl : readingLists) {
+		for (ReadingList rl : readingLists) {
 			logger.info("Saving reading list " + rl.getName());
 			logger.info("With " + rl.getStockItems().size() + " stock items");
 			readingListRepository.save(rl);
@@ -504,7 +507,7 @@ public class WebsiteController {
 
 	@RequestMapping(value = "/updateEvents")
 
-	@Transactional //(rollbackFor = ChipsException.class)
+	@Transactional // (rollbackFor = ChipsException.class)
 	public @ResponseBody String updateEvents(String eventsAsJson, String beansSha512, String message) throws ChipsException, JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -519,12 +522,13 @@ public class WebsiteController {
 			logger.info("have got event " + e.getName());
 			logger.info("Show name " + e.getShowName());
 
-			if(e.getStockItem() != null) {
+			if (e.getStockItem() != null) {
 				logger.info("for stockItem {} {}", e.getStockItem().getId(), e.getStockItem().getTitle());
 
-				//check stockitem exists, sometimes have problems with stock on beans not being on chips
-				boolean exists = stockItemRepository.exists( e.getStockItem().getId() );
-				if(!exists) {
+				// check stockitem exists, sometimes have problems with stock on
+				// beans not being on chips
+				boolean exists = stockItemRepository.existsById(e.getStockItem().getId());
+				if (!exists) {
 					logger.error("Stock item does not exist on chips!! Aborting");
 					return "stock item " + e.getStockItem().getTitle() + " doesn't exist on website";
 				}
@@ -537,7 +541,7 @@ public class WebsiteController {
 
 		eventRepository.flush();
 
-		eventRepository.save(events);
+		eventRepository.saveAll(events);
 
 		// Now reset chips, no need to redo images
 		initialise(true, false);
@@ -558,8 +562,7 @@ public class WebsiteController {
 
 		// Check have enough
 		if (bounciesAndStickies.size() < 16) {
-			return new ResponseEntity<String>("16 bouncies are need, only have " + bounciesAndStickies.size() + ". Add some more ",
-					HttpStatus.SERVICE_UNAVAILABLE);
+			return new ResponseEntity<String>("16 bouncies are need, only have " + bounciesAndStickies.size() + ". Add some more ", HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
 		// Check existence of all stocks and images of bouncies
@@ -568,7 +571,7 @@ public class WebsiteController {
 			if (exists == null) {
 				return new ResponseEntity<String>("Cannot find stock for " + si.getTitle() + ", isbn: " + si.getIsbn(), HttpStatus.SERVICE_UNAVAILABLE);
 			}
-			if(si.getPutImageOnWebsite() == false) {
+			if (si.getPutImageOnWebsite() == false) {
 				return new ResponseEntity<String>("This stock has put image on website unset, please edit and change : " + si.getTitle() + ", isbn: " + si.getIsbn(), HttpStatus.SERVICE_UNAVAILABLE);
 			}
 			if (si.getBouncyIndex() != null) {

@@ -27,10 +27,10 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long>, Pa
 
 	 @Query("select new StockItem(si.id, si.isbn, si.title, si.imageFilename, si.reviewShort, si.sellPrice, si.postage, si.availability, si.publishedDate, si.binding, si.publisher.name, si.publisher.id, si.quantityInStock, si.category.id, si.categoryName, si.type) from StockItem si where si.category.id = :id order by si.stickyCategoryIndex desc, si.salesLastYear desc")
 	 //Stream<StockItem> findByCategory(@Param("id") Long id, Pageable pageable);
-   List<StockItem> findByCategory(@Param("id") Long id, Pageable pageable);
+	 List<StockItem> findByCategory(@Param("id") Long id, Pageable pageable);
 
 	 @Query("select new StockItem(si.id, si.isbn, si.title, si.imageFilename, si.reviewShort, si.sellPrice, si.postage, si.availability, si.publishedDate, si.binding, si.publisher.name, si.publisher.id, si.quantityInStock, si.category.id, si.categoryName, si.type) from StockItem si where si.ebookTurnaroundUrl is not null order by si.stickyCategoryIndex desc, si.salesLastYear desc")
-   List<StockItem> findEbooks(Pageable pageable);
+	 List<StockItem> findEbooks(Pageable pageable);
 
 	 @Query("select new StockItem(si.id, si.isbn, si.title, si.imageFilename, si.reviewShort, si.sellPrice, si.postage, si.availability, si.publishedDate, si.binding, si.publisher.name, si.publisher.id, si.quantityInStock, si.category.id, si.categoryName, si.type) from StockItem si where si.parentCategoryId = :id order by si.stickyCategoryIndex desc, si.salesLastYear desc")
 	 List<StockItem> findByParentCategory(@Param("id") Long id, Pageable pageable);
