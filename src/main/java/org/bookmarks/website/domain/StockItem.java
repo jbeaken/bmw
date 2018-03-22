@@ -33,39 +33,196 @@ import org.springframework.format.annotation.NumberFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- *
- * @author jack
- * http://g-ecx.images-amazon.com/images/G/02/misc/no-img-lg-uk.gif - From AZ, no image
- *
- * http://ecx.images-amazon.com/images/I/51d9UZ7a2vL.jpg
- *
- * http://ecx.images-amazon.com/images/I/516GPonE4CL._BO2,204,203,200_PIsitb-,TopRight,35,-76_AA300_SH20_OU02_.jpg
- * <img th:src="@{'/imageFiles/' + ${stockItem.isbn} + '.jpg'}"
- */
 @Entity
 @Indexed
-@JsonIgnoreProperties({"category"})
-public class StockItem {
+@JsonIgnoreProperties({ "category" })
+public class StockItem extends AbstractEntity {
 
+	@Id
+	protected Long id;
+
+	private Date dateCreated = new Date();
+
+	@Transient
+	private Boolean putImageOnWebsite;
+	@Transient
+	private Boolean putReviewOnWebsite;
+	@Transient
+	private Boolean putOnWebsite;
+
+	// Stickies and bouncies
+	@Column(name = "sticky_category_idx")
+	private Long stickyCategoryIndex;
+	@Column(name = "sticky_type_idx")
+	private Long stickyTypeIndex;
+	@Column(name = "bouncy_idx")
+	private Long bouncyIndex;
+	@Column(name = "merchandise_idx")
+	private Long merchandiseIndex;
+
+	// Availability
+	@Column(name = "always_in_stock")
+	@Field(index = Index.NO, store = Store.YES)
+	private Boolean alwaysInStock;
+
+	@Column(name = "gardners_stock_level")
+	@Field(index = Index.NO, store = Store.YES)
+	private Long gardnersStockLevel = 0l;
+
+	@Column(name = "available_at_suppliers")
+	@Field(index = Index.NO, store = Store.YES)
+	private Boolean isAvailableAtSuppliers = false;
+
+	// Ebook links
+	@Column(name = "ebook_turnaround_url")
+	private String ebookTurnaroundUrl;
+	@Column(name = "ebook_alternate_url")
+	private String ebookAlternateUrl;
+
+	@NotNull
+	@Size(min = 1, max = 255)
+	@Field(index = Index.YES, store = Store.YES)
+	private String title;
+
+	@NotNull
+	@Field(index = Index.NO, store = Store.YES)
+	private BigDecimal postage;
+
+	@Field(index = Index.NO, store = Store.YES)
+	@Column(name = "img_url")
+	private String imageURL;
+
+	@Field(index = Index.NO, store = Store.YES)
+	@Column(name = "img_filename")
+	private String imageFilename;
+
+	@Field(index = Index.NO, store = Store.YES)
+	private Integer noOfPages;
+
+	@NotNull
+	@Field(index = Index.YES, store = Store.YES)
+	private Long quantityInStock;
+
+	@ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, fetch = FetchType.EAGER)
+	@JoinTable(joinColumns = { @JoinColumn(name = "stockitem_id") }, inverseJoinColumns = { @JoinColumn(name = "author_id") })
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	private Set<Author> authors;
+
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
+
+	private String categoryName;
+
+	@Column(name = "parent_category_id")
+	private Long parentCategoryId;
+
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Field(index = Index.NO, store = Store.YES)
+	private StockItemType type = StockItemType.BOOK;
+
+	private Long width;
+
+	private Long height;
+
+	private Long depth;
+
+	@Column(columnDefinition = "text")
+	private String reviewAsText;
+
+	@Field(index = Index.NO, store = Store.YES)
+	private String reviewShort;
+
+	@Column(name = "review_as_html", columnDefinition = "text")
+	private String reviewAsHTML;
+
+	// @Field(index=Index.NO, store=Store.YES)
+	private String dimensions;
+
+	@Min(0)
+	@NotNull
+	@NumberFormat(pattern = "#.##")
+	private BigDecimal publisherPrice;
+
+	@Min(0)
+	@NotNull
+	@NumberFormat(pattern = "#.##")
+	@Field(index = Index.NO, store = Store.YES)
+	private BigDecimal sellPrice;
+
+	@Min(value = 0)
+	@NumberFormat(pattern = "#.##")
+	@Field(index = Index.NO, store = Store.YES)
+	private BigDecimal priceThirdPartySecondHand;
+
+	@Min(value = 0)
+	@NumberFormat(pattern = "#.##")
+	@Field(index = Index.NO, store = Store.YES)
+	private BigDecimal priceThirdPartyCollectable;
+
+	@Min(value = 0)
+	@NumberFormat(pattern = "#.##")
+	@Field(index = Index.NO, store = Store.YES)
+	private BigDecimal priceThirdPartyNew;
+
+	@Min(value = 0)
+	@NumberFormat(pattern = "#.##")
+	@Field(index = Index.NO, store = Store.YES)
+	@Column(name = "price_at_az")
+	private BigDecimal priceAtAZ;
+
+	@DateTimeFormat(pattern = "dd-MM-yy")
+	@Field(index = Index.NO, store = Store.YES)
+	private Date publishedDate;
+
+	@NotNull
+	@Column(unique = true)
+	@Field(index = Index.NO, store = Store.YES)
+	private String isbn;
+
+	@NotNull
+	@Field(index = Index.YES, store = Store.YES)
+	private Integer salesLastYear;
+
+	@NotNull
+	@Field(index = Index.NO, store = Store.YES)
+	private Integer salesTotal;
+
+	@NotNull
+	@Column(unique = true)
+	private Long isbnAsNumber;
+
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Field(index = Index.NO, store = Store.YES)
+	private Availability availability = Availability.PUBLISHED;
+
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Field(index = Index.NO, store = Store.YES)
+	private Binding binding;
 
 	public Boolean hasImage() {
-		if(imageFilename != null) return true;
+		if (imageFilename != null)
+			return true;
 		return false;
 	}
 
 	public Boolean getShowVerticalImage() {
-		if(getPublisher().getId().equals(3675l)) return true; //Past Pixels
+		if (getPublisher().getId().equals(3675l))
+			return true; // Past Pixels
 		return false;
 	}
 
 	public String getWhatIsIt() {
-		if(getBinding() == Binding.PAPERBACK || getBinding() == Binding.HARDBACK) {
+		if (getBinding() == Binding.PAPERBACK || getBinding() == Binding.HARDBACK) {
 			return getBinding().getDisplayName();
 		}
 		return getType().getDisplayName();
 	}
-	//URLs
+
 	public String getViewUrl() throws UnsupportedEncodingException {
 		return "/view/" + getId() + "/" + getCleanTitleForUrl();
 	}
@@ -77,242 +234,64 @@ public class StockItem {
 	public String getCleanTitleForUrl() throws UnsupportedEncodingException {
 		String title = getTitle();
 		title = title.replace("/", "");
-		if(title.length() > 200) title = title.substring(0, 200);
+		if (title.length() > 200)
+			title = title.substring(0, 200);
 		return URLEncoder.encode(title, "UTF-8");
 	}
 
 	public String getImageUrl() {
-		return "/imageFiles/isbn/" + getImageFilename(); //Local
-//		return getImageURL(); //AZ
+		return "/imageFiles/isbn/" + getImageFilename(); // Local
 	}
 
 	public String getThumbnailImageUrl() {
-		return "/imageFiles/200/" + getImageFilename(); //Local
-//		return getImageURL(); //AZ
+		return "/imageFiles/200/" + getImageFilename(); // Local
 	}
 
 	public String getOriginalImageUrl() {
-		return "/imageFiles/original/" + getImageFilename(); //Local
-//		return getImageURL(); //AZ
+		return "/imageFiles/original/" + getImageFilename(); // Local
 	}
 
 	public String getSmallerImageUrl() {
-		return "/imageFiles/150/" + getImageFilename(); //Local
-//		return getImageURL(); //AZ
+		return "/imageFiles/150/" + getImageFilename(); // Local
 	}
 
 	public String getImageUrlForEmail() {
 		return "http://109.109.239.50/imageFiles/isbn/" + getImageFilename();
-//		return getImageURL(); //AZ
 	}
 
 	public boolean getHasImage() {
-		return (imageFilename == null)? false : true;
+		return (imageFilename == null) ? false : true;
 	}
 
 	public String getAvailabilityMessage() {
 		Long qis = getQuantityInStock();
 
-		if(qis > 0 || (gardnersStockLevel != null && gardnersStockLevel > 0) || (isAvailableAtSuppliers != null && isAvailableAtSuppliers)) {
-			//return "<span class=\"in_stock\">In stock</span>";
+		if (qis > 0 || (gardnersStockLevel != null && gardnersStockLevel > 0) || (isAvailableAtSuppliers != null && isAvailableAtSuppliers)) {
 			return "In Stock";
 		}
 
 		String message = null;
 
-		switch(getAvailability()) {
-			case OUT_OF_PRINT :
-//				message = "<span class=\"second_hand\">Only available second hand</span>";
-				message = "Only available second hand";
-				break;
-			case NOT_YET_PUBLISHED :
-//				message = "<span class=\"not_yet_published\">Available for pre-order</span>";
-				message = "Available for pre-order";
-				break;
-			default :  //For published, or available new
-//				message = "<span class=\"can_be_ordered_in\">Can be ordered in</span>";
-				message = "Can be ordered in";
+		switch (getAvailability()) {
+		case OUT_OF_PRINT:
+			message = "Only available second hand";
+			break;
+		case NOT_YET_PUBLISHED:
+			message = "Available for pre-order";
+			break;
+		default: // For published, or available new
+			message = "Can be ordered in";
 		}
 		return message;
 	}
 
- 	@Id
- 	//Has to insert using beans id, no strategy
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-	protected Long id;
-
-	//@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDate")
-    private Date dateCreated = new Date();
-
-	//What should be on website
-	@Transient private Boolean putImageOnWebsite;
-	@Transient private Boolean putReviewOnWebsite;
-	@Transient private Boolean putOnWebsite;
-
-	//Stickies and bouncies
-	@Column(name="sticky_category_idx") private Long stickyCategoryIndex;
-	@Column(name="sticky_type_idx") private Long stickyTypeIndex;
-	@Column(name="bouncy_idx") private Long bouncyIndex;
-	@Column(name="merchandise_idx") private Long merchandiseIndex;
-
-	//Availability
-	@Column(name="always_in_stock")
-	@Field(index=Index.NO, store=Store.YES)
-	private Boolean alwaysInStock;
-
-	@Column(name="gardners_stock_level")
-	@Field(index=Index.NO, store=Store.YES)
-	private Long gardnersStockLevel = 0l;
-
-	@Column(name="available_at_suppliers")
-	@Field(index=Index.NO, store=Store.YES)
-	private Boolean isAvailableAtSuppliers = false;
-
-	//Ebook links
-	@Column(name="ebook_turnaround_url") private String ebookTurnaroundUrl;
-	@Column(name="ebook_alternate_url") private String ebookAlternateUrl;
-
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Field(index=Index.YES, store=Store.YES)
-    private String title;
-
-    @NotNull
-    @Field(index=Index.NO, store=Store.YES)
-    private BigDecimal postage;
-
-    @Field(index=Index.NO, store=Store.YES)
-	@Column(name="img_url")
-	private String imageURL;
-
-    @Field(index=Index.NO, store=Store.YES)
-	@Column(name="img_filename")
-	private String imageFilename;
-
-    @Field(index=Index.NO, store=Store.YES)
-    private Integer noOfPages;
-
-    @NotNull
-    @Field(index=Index.YES, store=Store.YES)
-    private Long quantityInStock;
-
-    @ManyToMany(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE}, fetch=FetchType.EAGER)
-    @JoinTable(joinColumns = { @JoinColumn(name = "stockitem_id") }, inverseJoinColumns = { @JoinColumn(name = "author_id") })
-//    @NotNull
-    @IndexedEmbedded(includeEmbeddedObjectId=true)
-    private Set<Author> authors;
-
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name="category_id")
-    private Category category;
-
-    private String categoryName;
-
-    @Column(name="parent_category_id")
-    private Long parentCategoryId;
-
-
-/*    @ManyToMany(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE})
-    @JoinTable(joinColumns = { @JoinColumn(name="stockitem_id") }, inverseJoinColumns = { @JoinColumn(name = "reading_list_id") })
-    @NotNull
-    private List<ReadingList> readingLists;   */
-
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Field(index=Index.NO, store=Store.YES)
-    private StockItemType type = StockItemType.BOOK;
-
-    private Long width;
-
-    private Long height;
-
-    private Long depth;
-
-    @Column(columnDefinition="text")
-    private String reviewAsText;
-
-    @Field(index=Index.NO, store=Store.YES)
-    private String reviewShort;
-
-    @Column(name="review_as_html", columnDefinition="text")
-    private String reviewAsHTML;
-
-//    @Field(index=Index.NO, store=Store.YES)
-    private String dimensions;
-
-    @Min(0)
-    @NotNull
-    @NumberFormat(pattern = "#.##")
-    private BigDecimal publisherPrice;
-
-    @Min(0)
-    @NotNull
-    @NumberFormat(pattern = "#.##")
-    @Field(index=Index.NO, store=Store.YES)
-    private BigDecimal sellPrice;
-
-	@Min(value=0)
-	@NumberFormat(pattern="#.##")
-	@Field(index=Index.NO, store=Store.YES)
-	private BigDecimal priceThirdPartySecondHand;
-
-	@Min(value=0)
-	@NumberFormat(pattern="#.##")
-	@Field(index=Index.NO, store=Store.YES)
-	private BigDecimal priceThirdPartyCollectable;
-
-	@Min(value=0)
-	@NumberFormat(pattern="#.##")
-	@Field(index=Index.NO, store=Store.YES)
-	private BigDecimal priceThirdPartyNew;
-
-	@Min(value=0)
-	@NumberFormat(pattern="#.##")
-	@Field(index=Index.NO, store=Store.YES)
-	@Column(name="price_at_az")
-	private BigDecimal priceAtAZ;
-
-    @DateTimeFormat(pattern = "dd-MM-yy")
-    @Field(index=Index.NO, store=Store.YES)
-    private Date publishedDate;
-
-    @NotNull
-    @Column(unique = true)
-    @Field(index=Index.NO, store=Store.YES)
-    private String isbn;
-
-    @NotNull
-    @Field(index=Index.YES, store=Store.YES)
-    private Integer salesLastYear;
-
-    @NotNull
-    @Field(index=Index.NO, store=Store.YES)
-    private Integer salesTotal;
-
 	@NotNull
-    @Column(unique = true)
-    private Long isbnAsNumber;
+	@Embedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	private Publisher publisher;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Field(index=Index.NO, store=Store.YES)
-    private Availability availability = Availability.PUBLISHED;
-
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Field(index=Index.NO, store=Store.YES)
-    private Binding binding;
-
-//    @ManyToOne(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE}, fetch=FetchType.LAZY)
-    @NotNull
-    @Embedded
-//    @JoinColumn(name="publisher_id")
-    @IndexedEmbedded(includeEmbeddedObjectId=true)
-    private Publisher publisher;
-
-    //ACCESORS
-    public Integer getSalesLastYear() {
+	// ACCESORS
+	public Integer getSalesLastYear() {
 		return salesLastYear;
 	}
 
@@ -337,7 +316,7 @@ public class StockItem {
 	}
 
 	public String getTitle() {
-		if(availability == Availability.OUT_OF_PRINT) {
+		if (availability == Availability.OUT_OF_PRINT) {
 			return title + " (Second Hand)";
 		}
 		return title;
@@ -345,12 +324,13 @@ public class StockItem {
 
 	public String getShortTitle() {
 		int max = 60;
-		if(title.length() < max) return title;
+		if (title.length() < max)
+			return title;
 		return title.substring(0, max);
 	}
 
 	public String getBouncyTitle() {
-		if(title.length() > 60) {
+		if (title.length() > 60) {
 			return title.substring(0, 60) + "...";
 		}
 		return title;
@@ -366,7 +346,8 @@ public class StockItem {
 
 	public BigDecimal getFullPostage() {
 		BigDecimal base = new BigDecimal(1.75);
-		if(type == StockItemType.PAMPHLET) base = new BigDecimal(0.75);
+		if (type == StockItemType.PAMPHLET)
+			base = new BigDecimal(0.75);
 		return base.add(postage);
 	}
 
@@ -496,22 +477,24 @@ public class StockItem {
 
 	public String getReviewForSearch() {
 		String review = getReviewAsText();
-		if(review == null) return "No Review";
+		if (review == null)
+			return "No Review";
 		int max = 200;
-		if(review.length() < 200) max = review.length();
+		if (review.length() < 200)
+			max = review.length();
 		return review.substring(0, max);
 	}
 
-    public BigDecimal getVat() {
-        switch(type) {
-            case BOOK:
-                return new BigDecimal(0);
-            case PAMPHLET:
-                return new BigDecimal(0);
-            default:
-                return new BigDecimal(20);
-        }
-    }
+	public BigDecimal getVat() {
+		switch (type) {
+		case BOOK:
+			return new BigDecimal(0);
+		case PAMPHLET:
+			return new BigDecimal(0);
+		default:
+			return new BigDecimal(20);
+		}
+	}
 
 	public BigDecimal getPriceThirdPartySecondHand() {
 		return priceThirdPartySecondHand;
@@ -570,14 +553,15 @@ public class StockItem {
 	}
 
 	public String getReviewShort() {
-		if(reviewShort == null) return null;
+		if (reviewShort == null)
+			return null;
 		return reviewShort + "...";
 	}
 
 	public String getHtmlTitle() {
 		Author author = getMainAuthor();
 		String text = getTitle();
-		if(author != null) {
+		if (author != null) {
 			text = text + " : " + author.getName();
 		}
 		return text;
@@ -615,20 +599,23 @@ public class StockItem {
 		return getId() + " " + getTitle();
 	}
 
-	//Constructors out of the way
+	// Constructors out of the way
 
 	public StockItem() {
 		super();
 	}
 
-   //new StockItem(si.id, si.isbn, si.title, si.imageFilename, si.reviewShort, si.sellPrice, si.availability, si.publishedDate, si.binding, si.publisher.name, si.publisher.id, si.category.id, si.categoryName)
-	public StockItem(Long id, String isbn, String title, String imageFilename, String reviewShort, BigDecimal sellPrice, BigDecimal postage, Availability availability, Date publishedDate, Binding binding, String publisherName, Long publisherId, Long quantityInStock, Long categoryId, String categoryName, StockItemType type) {
+	// new StockItem(si.id, si.isbn, si.title, si.imageFilename, si.reviewShort,
+	// si.sellPrice, si.availability, si.publishedDate, si.binding,
+	// si.publisher.name, si.publisher.id, si.category.id, si.categoryName)
+	public StockItem(Long id, String isbn, String title, String imageFilename, String reviewShort, BigDecimal sellPrice, BigDecimal postage, Availability availability, Date publishedDate, Binding binding, String publisherName, Long publisherId, Long quantityInStock, Long categoryId,
+			String categoryName, StockItemType type) {
 		this();
 		setId(id);
 		setTitle(title);
 		setIsbn(isbn);
 		setTitle(title);
-//		setImageURL(imageUrl);
+		// setImageURL(imageUrl);
 		setImageFilename(imageFilename);
 		setReviewShort(reviewShort);
 		setSellPrice(sellPrice);
@@ -658,7 +645,7 @@ public class StockItem {
 
 	}
 
-//	findByCategoryWithImage
+	// findByCategoryWithImage
 	public StockItem(Long id, String title, String imageFilename, BigDecimal sellPrice) {
 		this();
 		setId(id);
@@ -667,7 +654,7 @@ public class StockItem {
 		setSellPrice(sellPrice);
 	}
 
-//	getBouncies
+	// getBouncies
 	public StockItem(Long id, String title, String imageFilename) {
 		this();
 		setId(id);
@@ -740,9 +727,9 @@ public class StockItem {
 	}
 
 	public Author getMainAuthor() {
-		//May not have any author(s)
+		// May not have any author(s)
 		Iterator iterator = authors.iterator();
-		if(iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			return authors.iterator().next();
 		}
 

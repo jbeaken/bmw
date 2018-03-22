@@ -21,60 +21,60 @@ import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-//@JsonIgnoreProperties(value = { "publisher" })
+// @JsonIgnoreProperties(value = { "publisher" })
 public class Customer extends AbstractEntity {
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy="customer", orphanRemoval=true, fetch=FetchType.EAGER)
-  private Set<OrderLine> orders = new HashSet<OrderLine>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true, fetch = FetchType.EAGER)
+	private Set<OrderLine> orders = new HashSet<OrderLine>();
 
-  private Long beansId;
+	private Long beansId;
 
 	@NotNull
-	@Size(min=1, max = 55)
-	@Column(name="firstName")
-	@Type(type="encryptedString")
+	@Size(min = 1, max = 55)
+	@Column(name = "firstName")
+	@Type(type = "encryptedString")
 	private String firstName;
 
 	@NotNull
-	@Size(min=1, max = 55)
-	@Column(name="lastName")
-	@Type(type="encryptedString")
+	@Size(min = 1, max = 55)
+	@Column(name = "lastName")
+	@Type(type = "encryptedString")
 	private String lastName;
 
 	private CreditCard creditCard;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@Column(name="paymentType")
+	@Column(name = "paymentType")
 	private PaymentType paymentType = PaymentType.CREDIT_CARD;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@Column(name="deliveryType")
+	@Column(name = "deliveryType")
 	private DeliveryType deliveryType = DeliveryType.MAIL;
 
 	@NotNull
 	private Boolean hasBeenConsumed = Boolean.FALSE;
 
-//	@NotNull
+	// @NotNull
 	private Boolean pendingConsumption;
 
-    //@NotNull
-    //private Boolean hasAccount;
+	// @NotNull
+	// private Boolean hasAccount;
 
-    @Embedded
-    @Valid
-    private ContactDetails contactDetails;
+	@Embedded
+	@Valid
+	private ContactDetails contactDetails;
 
-    @Embedded
-    private Address address;
+	@Embedded
+	private Address address;
 
-    //Constructors
-    public Customer() {
-    	super();
-    	setAddress(new Address());
-    	setCreditCard(new CreditCard());
-    }
+	// Constructors
+	public Customer() {
+		super();
+		setAddress(new Address());
+		setCreditCard(new CreditCard());
+	}
 
 	public String getFullName() {
 		return getFirstName() + " " + getLastName();
@@ -95,20 +95,17 @@ public class Customer extends AbstractEntity {
 	public void setBeansId(Long beansId) {
 		this.beansId = beansId;
 	}
-/*
-	public Boolean getHasAccount() {
-		return hasAccount;
-	}
-
-	public void setHasAccount(Boolean hasAccount) {
-		this.hasAccount = hasAccount;
-	}
-*/
-
+	/*
+	 * public Boolean getHasAccount() { return hasAccount; }
+	 * 
+	 * public void setHasAccount(Boolean hasAccount) { this.hasAccount =
+	 * hasAccount; }
+	 */
 
 	public ContactDetails getContactDetails() {
 		return contactDetails;
 	}
+
 	public String getFirstName() {
 		return firstName;
 	}

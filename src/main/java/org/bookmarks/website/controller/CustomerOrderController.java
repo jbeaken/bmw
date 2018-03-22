@@ -350,11 +350,7 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 		Customer customer = order.getCustomer();
 		customer.setHasBeenConsumed(false);
 
-		String webReference = String.valueOf(new Date().getTime()).substring(5); // Shared
-																					// by
-																					// each
-																					// order
-																					// line
+		String webReference = String.valueOf(new Date().getTime()).substring(5); 
 
 		for (OrderLine orderLine : customer.getOrders()) {
 			orderLine.setCustomer(customer);

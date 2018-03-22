@@ -11,6 +11,7 @@ import org.hibernate.annotations.Type;
 public class Address {
 
 	@Type(type="encryptedString")
+	@NotNull
 	private @NotNull String address1;
 
 	@Type(type="encryptedString")
@@ -23,7 +24,8 @@ public class Address {
 	private @NotNull String city;
 
 	@Type(type="encryptedString")
-	private @NotNull String postcode;
+	@NotNull
+	private String postcode;
 	
 	@Type(type="encryptedString")
 	private @NotNull String country = "United Kingdom";

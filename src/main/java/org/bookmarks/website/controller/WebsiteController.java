@@ -384,9 +384,12 @@ public class WebsiteController {
 
 		Optional<StockItem> optional = stockItemRepository.findById(33729l);
 
-		StockItem bookOfTheWeek = optional.get();
+		if (optional.isPresent()) {
 
-		context.setAttribute("bookOfTheWeek", bookOfTheWeek);
+			StockItem bookOfTheWeek = optional.get();
+
+			context.setAttribute("bookOfTheWeek", bookOfTheWeek);
+		}
 	}
 
 	private void createBouncyImages(List<StockItem> stockItems) {
