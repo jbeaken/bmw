@@ -137,8 +137,7 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	public String showPaymentDetailsScreen(HttpSession session, ModelMap model) {
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 
-		if (order == null)
-			return "redirect:/";
+		if (order == null) return "redirect:/";
 
 		model.addAttribute(order.getCustomer().getCreditCard());
 		return "customerOrder/paymentDetails";
@@ -151,8 +150,7 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 		if (order == null)	return "redirect:/";
 
-		// Is this from basket screen? If so could be that user has already
-		// entered details
+		// Is this from basket screen? If so could be that user has already entered details
 		if (order.getCustomer().getAddress().getAddress1() != null && order.getCustomer().getCreditCard().getCreditCard1() != null) {
 			// Details already completed, send to confirmation screen
 			return "customerOrder/confirmation";
@@ -178,6 +176,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/saveCustomerDetails", method = RequestMethod.POST)
 	public String saveCustomerDetails(@Valid Customer customer, BindingResult bindingResult, HttpSession session, ModelMap modelMap) {
+		
+		logger.info("Customer request for saveCustomerDetails");
+		
 		CustomerOrder sessionOrder = (CustomerOrder) session.getAttribute("order");
 
 		if (sessionOrder == null)
@@ -189,9 +190,7 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 			return "customerOrder/customerDetails";
 		}
 
-		customer.setOrders(sessionOrder.getCustomer().getOrders()); // Transfer
-																	// from
-																	// session
+		customer.setOrders(sessionOrder.getCustomer().getOrders());
 		customer.setDeliveryType(sessionOrder.getCustomer().getDeliveryType());
 		customer.setPaymentType(sessionOrder.getCustomer().getPaymentType());
 
@@ -209,7 +208,11 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/saveDeliveryDetails")
 	public String saveDeliveryDetails(@Valid Address address, BindingResult bindingResult, HttpSession session, ModelMap modelMap) {
+		
+		logger.info("Customer request for saveDeliveryDetails");
+		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
+		
 		if (order == null)
 			return "redirect:/";
 
@@ -240,6 +243,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	 */
 	@RequestMapping(value = "/savePaymentDetails")
 	public String savePaymentDetails(@Valid CreditCard creditCard, HttpSession session, ModelMap modelMap) {
+		
+		 logger.info("Customer request for savePaymentDetails"); 
+		 
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 		if (order == null)
 			return "redirect:/";
@@ -388,33 +394,27 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	}
 
 	private void sendOrderConfirmation(CustomerOrder customerOrder, String webReference) throws MessagingException {
-		// Prepare the evaluation context
+		
+		logger.info("Attempting sending email of order confirmation");
+
 		final Context ctx = new Context();
 		ctx.setVariable("customer", customerOrder.getCustomer());
 		ctx.setVariable("postage", customerOrder.getPostage());
 		ctx.setVariable("totalPrice", customerOrder.getTotalPrice());
 		ctx.setVariable("webReference", webReference);
-		// ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports",
-		// "Music"));
-		// ctx.setVariable("imageResourceName", imageResourceName); // so that
-		// we can reference it from HTML
+		
+		
 
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true
-																								// =
-																								// multipart
+		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
 
-		// BCC depending on profile
 		String[] profiles = environment.getActiveProfiles();
+		
 		if (profiles[0].equals("dev") || profiles[0].equals("test")) {
-			// For test and dev
 			message.setSubject("TEST - Your Bookmarks Order Confirmation");
 			message.setFrom("test@bookmarksbookshop.co.uk");
-			// message.setTo("jack747@gmail.com");
 		} else {
 			message.setSubject("Your Bookmarks Order Confirmation");
-			// message.setBcc(new String[]{"jack747@gmail.com",
-			// "info@bookmarksbookshop.co.uk"});
 			message.setBcc("info@bookmarksbookshop.co.uk");
 			message.setFrom("info@bookmarksbookshop.co.uk");
 			message.setTo(customerOrder.getCustomer().getContactDetails().getEmail());
@@ -424,13 +424,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 		final String htmlContent = this.templateEngine.process("/mail/orderComplete.html", ctx);
 		message.setText(htmlContent, true); // true = isHtml
 
-		// Add the inline image, referenced from the HTML code as
-		// "cid:${imageResourceName}"
-		// final InputStreamSource imageSource = new
-		// ByteArrayResource(imageBytes);
-		// message.addInline(imageResourceName, imageSource, imageContentType);
-
 		// Send mail
 		this.mailSender.send(mimeMessage);
+		
+		logger.info("Sent!");
 	}
 }

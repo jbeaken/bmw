@@ -41,8 +41,6 @@ public class StockItem extends AbstractEntity {
 	@Id
 	protected Long id;
 
-	private Date dateCreated = new Date();
-
 	@Transient
 	private Boolean putImageOnWebsite;
 	@Transient
@@ -716,14 +714,6 @@ public class StockItem extends AbstractEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 
 	public Author getMainAuthor() {

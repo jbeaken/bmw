@@ -24,7 +24,6 @@ import org.bookmarks.website.domain.DeliveryType;
 import org.bookmarks.website.domain.PaymentType;
 import org.bookmarks.website.domain.StockItem;
 import org.bookmarks.website.domain.StockItemType;
-import org.bookmarks.website.repository.EventRepository;
 import org.bookmarks.website.repository.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +54,6 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 	private StockItemRepository stockItemRepository;
 
 	@Autowired
-	private EventRepository eventRepository;
-
-	@Autowired
 	private JavaMailSender mailSender;
 
 	@Autowired
@@ -77,15 +73,11 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 	 * Get the stock item, add 'interesting' which is the best sellers from the
 	 * stockitem category add other authors stockitems until reach a max of 5
 	 * 
-	 * @param stockItemId
-	 * @param modelMap
-	 * @return
 	 */
 	@RequestMapping(value = "/view/{stockItemId}/{title}", method = RequestMethod.GET)
 	public String viewStockItem(@PathVariable("stockItemId") Long stockItemId, ModelMap modelMap, HttpServletResponse response) {
-		
-		Optional<StockItem> optional = stockItemRepository.findById(stockItemId);
 
+		Optional<StockItem> optional = stockItemRepository.findById(stockItemId);
 		StockItem stockItem = optional.get();
 
 		if (stockItem == null) {
@@ -93,14 +85,14 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 			return "public/home";
 		}
 
-		Pageable pageable = new PageRequest(0, 5);
+		Pageable pageable = PageRequest.of(0, 5);
 
 		List<StockItem> interesting = stockItemRepository.findByCategoryWithImage(stockItem.getCategory().getId(), pageable);
 
 		// Add authors books
 		List<StockItem> authorsOtherBooks = new ArrayList<StockItem>(5);
 		for (Author a : stockItem.getAuthors()) {
-			pageable = new PageRequest(0, 5 - authorsOtherBooks.size());
+			pageable =  PageRequest.of(0, 5 - authorsOtherBooks.size());
 			List<StockItem> local = stockItemRepository.findAuthorsOtherStockItems(a.getId(), stockItemId, pageable);
 			authorsOtherBooks.addAll(local);
 			if (authorsOtherBooks.size() > 4)
@@ -110,10 +102,6 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		modelMap.addAttribute(stockItem);
 		modelMap.addAttribute("interesting", interesting);
 		modelMap.addAttribute("authorsOtherBooks", authorsOtherBooks);
-		//
-		// response.setContentType("text/html;charset=UTF-8");
-		// response.addHeader("Content-Type", "text/html; charset=utf-8");
-		// response.setCharacterEncoding("UTF-8");
 
 		return "public/view";
 	}
@@ -122,27 +110,16 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 	 * Get the stock item, add 'interesting' which is the best sellers from the
 	 * stockitem category add other authors stockitems until reach a max of 5
 	 * 
-	 * @param stockItemId
-	 * @param modelMap
-	 * @return
 	 */
 	@RequestMapping(value = "/viewByIsbn/{isbn}/{title}", method = RequestMethod.GET)
 	public String viewByIsbn(@PathVariable("isbn") Long isbn, ModelMap modelMap, HttpServletResponse response) {
 		StockItem stockItem = stockItemRepository.findByISBN(isbn);
+		if (stockItem == null) {
+			// This happens, bad bot?
+			return "";
+		}
 		return viewStockItem(stockItem.getId(), modelMap, response);
 	}
-
-	// @RequestMapping("/1917")
-	// public String nineteenseventeen(ModelMap model) {
-	// return
-	// "redirect:https://www.kickstarter.com/projects/556239072/1917-russias-red-year-100th-anniversary-graphic-no";
-	// }
-
-	// @RequestMapping("/.well-known/pki-validation/godaddy.html")
-	// public String godaddy(ModelMap model) {
-	// return
-	// "redirect:https://www.kickstarter.com/projects/556239072/1917-russias-red-year-100th-anniversary-graphic-no";
-	// }
 
 	@RequestMapping()
 	public String index(ModelMap model) {
@@ -226,7 +203,6 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		return "redirect:/thankYou";
 	}
 
-	// Remove from mailing list
 	@RequestMapping(value = "removeFromMailingList", method = RequestMethod.GET)
 	public String removeFromMailingList(ModelMap model) {
 		model.addAttribute(new ContactForm());
@@ -245,14 +221,12 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		return "public/thankYouForRemovingFromMailingList";
 	}
 
-	// Show sponsor page, from sidebar.html
 	@RequestMapping(value = "/sponsor", method = RequestMethod.GET)
 	public String sponsor(ModelMap model) {
 		model.addAttribute(new SponsorForm());
 		return "public/sponsor";
 	}
 
-	// Pay Sponsorship
 	@RequestMapping(value = "/paySponsorship")
 	public String paySponsorship(@Valid SponsorForm sponsorForm, BindingResult result, ModelMap model, HttpSession session) {
 
@@ -263,8 +237,8 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 
 		// Get stockitem to be added to order
 		Optional<StockItem> optional = stockItemRepository.findById(39315l);
-
 		StockItem stockItem = optional.get();
+		
 		stockItem.setSellPrice(sponsorForm.getAmount());
 
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
@@ -292,77 +266,7 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		return "customerOrder/customerDetails";
 
 	}
-	// private void sendSponsorshipPaidEmail(SponsorForm contactForm) throws
-	// MessagingException {
-	// // Prepare the evaluation context
-	// final Context ctx = new Context();
-	// ctx.setVariable("sponsorForm", contactForm);
-	//
-	// final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-	// final MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
-	// true, "UTF-8"); // true = multipart
-	//
-	//
-	// //BCC depending on profile
-	// String[] profiles = environment.getActiveProfiles();
-	// if(profiles[0].equals("dev") || profiles[0].equals("test")) {
-	// //For test and dev
-	// message.setSubject("TEST - Sponsor FORM");
-	// message.setFrom("test@bookmarksbookshop.co.uk");
-	// message.setTo("jack747@gmail.com");
-	// } else {
-	// message.setSubject(contactForm.getFullName() + " has sponsored us");
-	// message.setFrom("info@bookmarksbookshop.co.uk");
-	// message.setTo("info@bookmarksbookshop.co.uk");
-	// message.setBcc(new String[]{"jack747@gmail.com",
-	// "sarahensor@hotmail.co.uk"});
-	// }
-	//
-	// // Create the HTML body using Thymeleaf
-	// final String htmlContent =
-	// this.templateEngine.process("/mail/sponsor.html", ctx);
-	// message.setText(htmlContent, true); // true = isHtml
-	//
-	// // Add the inline image, referenced from the HTML code as
-	// "cid:${imageResourceName}"
-	// //final InputStreamSource imageSource = new
-	// ByteArrayResource(imageBytes);
-	// // message.addInline(imageResourceName, imageSource, imageContentType);
-	//
-	// // Send mail
-	// this.mailSender.send(mimeMessage);
-	//
-	// }
 
-	// @RequestMapping(value = "/sponsor", method = RequestMethod.POST)
-	// public String sponsor(@Valid SponsorForm contactForm, BindingResult
-	// result, ModelMap model, RedirectAttributes redirectAttributes) {
-	// if(result.hasErrors()) { //IE doesn't allow HTML5 validation
-	// if(result.hasFieldErrors("email")) {
-	// addError(contactForm.getEmail() + " is an invalid email", model);
-	// } else {
-	// addError("Please complete all fields in the form.", model);
-	// }
-	// return "public/sponsor";
-	// }
-	////
-	//// if(contactForm.getName().contains("louis vuitton")) { //Spam
-	//// return "redirect:/thankYou";
-	//// }
-	//
-	// try {
-	// sendSponsorEmail(contactForm);
-	// } catch (MessagingException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// redirectAttributes.addFlashAttribute("thankYouMessage", "Thank you for
-	// sponsoring us.");
-	//
-	// return "redirect:/thankYou";
-	// }
-	//
-	// Contact form
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
 	public String contact(ModelMap model) {
 		model.addAttribute(new ContactForm());
@@ -377,7 +281,7 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 
 	@RequestMapping(value = "/xmas", method = RequestMethod.GET)
 	public String xmas(ModelMap model) {
-		Collection<StockItem> stockItems = stockItemRepository.findByType(StockItemType.MUG, new PageRequest(0, 10));
+		Collection<StockItem> stockItems = stockItemRepository.findByType(StockItemType.MUG, PageRequest.of(0, 10));
 		model.addAttribute(stockItems);
 		return "public/xmas";
 	}
@@ -396,7 +300,6 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		OutputStream os = response.getOutputStream();
 
 		FileCopyUtils.copy(is, os);
-
 		os.flush();
 		os.close();
 	}
@@ -435,64 +338,23 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 	 * thankYouMessage will have already been saved in flash scope e.g.
 	 * redirectAttributes.addFlashAttribute("thankYouMessage", "Thank you, we
 	 * will reply as soon as possible");
-	 * 
-	 * @return
 	 */
 	@RequestMapping(value = "/thankYou", method = RequestMethod.GET)
 	public String thankYou() {
 		return "public/thankYou";
 	}
 
-	// private void sendSponsorEmail(SponsorForm sponsorForm) throws
-	// MessagingException {
-	// // Prepare the evaluation context
-	// final Context ctx = new Context();
-	// ctx.setVariable("sponsorForm", sponsorForm);
-	//
-	// final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-	// final MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
-	// true, "UTF-8"); // true = multipart
-	//
-	//
-	// //BCC depending on profile
-	// String[] profiles = environment.getActiveProfiles();
-	// if(profiles[0].equals("dev") || profiles[0].equals("test")) {
-	// //For test and dev
-	// message.setSubject("TEST - Sponsor FORM");
-	// message.setFrom("test@bookmarksbookshop.co.uk");
-	// message.setTo("jack747@gmail.com");
-	// } else {
-	// message.setSubject(sponsorForm.getFullName() + " has sponsored us");
-	// message.setFrom("info@bookmarksbookshop.co.uk");
-	// message.setTo("info@bookmarksbookshop.co.uk");
-	// message.setBcc(new String[]{"jack747@gmail.com",
-	// "sarahensor@hotmail.co.uk"});
-	// }
-	//
-	// // Create the HTML body using Thymeleaf
-	// final String htmlContent =
-	// this.templateEngine.process("/mail/sponsor.html", ctx);
-	// message.setText(htmlContent, true); // true = isHtml
-	//
-	// // Add the inline image, referenced from the HTML code as
-	// "cid:${imageResourceName}"
-	// //final InputStreamSource imageSource = new
-	// ByteArrayResource(imageBytes);
-	// // message.addInline(imageResourceName, imageSource, imageContentType);
-	//
-	// // Send mail
-	// this.mailSender.send(mimeMessage);
-	// }
 
 	private void sendContactEmail(ContactForm contactForm) throws MessagingException {
+
+		logger.info("Sending email to info@bookmarksbookshop.co.uk {}", contactForm);
+
 		// Prepare the evaluation context
 		final Context ctx = new Context();
 		ctx.setVariable("contactForm", contactForm);
 
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true
-																								// =
-																								// multipart
+		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
 
 		// BCC depending on profile
 		String[] profiles = environment.getActiveProfiles();
@@ -503,53 +365,48 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 			message.setTo("jack747@gmail.com");
 		} else {
 			message.setSubject(contactForm.getName() + " has contacted us");
+			// message.setFrom(contactForm.getEmail());
 			message.setFrom("info@bookmarksbookshop.co.uk");
 			message.setTo("info@bookmarksbookshop.co.uk");
-			// message.setBcc(new String[]{"jack747@gmail.com"});
 		}
 
 		// Create the HTML body using Thymeleaf
 		final String htmlContent = this.templateEngine.process("/mail/contact.html", ctx);
 		message.setText(htmlContent, true); // true = isHtml
 
-		// Add the inline image, referenced from the HTML code as
-		// "cid:${imageResourceName}"
-		// final InputStreamSource imageSource = new
-		// ByteArrayResource(imageBytes);
-		// message.addInline(imageResourceName, imageSource, imageContentType);
-
 		// Send mail
 		this.mailSender.send(mimeMessage);
+
+		logger.info("Successfully sent!");
 	}
 
 	private void sendMailingListEmail(ContactForm contactForm, boolean join) throws MessagingException {
+
+		logger.info("Sending mailing list email to info@bookmarksbookshop.co.uk {}", contactForm);
+
 		// Prepare the evaluation context
 		final Context ctx = new Context();
 		ctx.setVariable("contactForm", contactForm);
 
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true
-																								// =
-																								// multipart
+		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
+		
 		if (join) {
 			message.setSubject(contactForm.getEmail() + " wants to join our mailing list");
 		} else {
 			message.setSubject(contactForm.getEmail() + " wants to be removed from our mailing list ***********");
 		}
+		
 		message.setFrom("chips@bookmarksbookshop.co.uk");
 		message.setTo("info@bookmarksbookshop.co.uk");
 
 		final String htmlContent = this.templateEngine.process("/mail/mailingList.html", ctx);
 		message.setText(htmlContent, true); // true = isHtml
 
-		// Add the inline image, referenced from the HTML code as
-		// "cid:${imageResourceName}"
-		// final InputStreamSource imageSource = new
-		// ByteArrayResource(imageBytes);
-		// message.addInline(imageResourceName, imageSource, imageContentType);
-
 		// Send mail
 		this.mailSender.send(mimeMessage);
+
+		logger.info("Successfully sent!");
 	}
 
 }

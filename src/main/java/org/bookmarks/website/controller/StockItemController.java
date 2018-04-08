@@ -299,6 +299,11 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		Author author = searchBean.getAuthor();
 		Pageable pageable = searchBean.getPageable();
 
+		if(author == null || author.getId() == null) {
+			//bad bot
+			return "error";
+		}
+
 		List<StockItem> stockItems = stockItemRepository.findByAuthor(author.getId(), pageable);
 		Long count = stockItemRepository.countByAuthor(author.getId());
 
@@ -340,20 +345,28 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 	@RequestMapping(value = "/searchByPublisher", method = RequestMethod.GET)
 	public String searchByPublisher(StockItemSearchBean searchBean, ModelMap map) {
 		Publisher publisher = searchBean.getPublisher();
+		
+		if(publisher == null) {
+			//Is this a bot?
+			logger.warn("searchByPublisher publisher is null, bot??");
+			return "/public/search";
+		}
 
 		Pageable pageable = searchBean.getPageable();
 
 		List<StockItem> stockItems = stockItemRepository.findByPublisher(publisher.getId(), pageable);
+		if(stockItems.isEmpty()) {
+			//What's going on?
+			return "/public/search";
+		}
 		Long count = stockItemRepository.countByPublisher(publisher.getId());
 
 		//Get authors
 		populateAuthors(stockItems);
 
-
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
-//		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", stockItems.get(0).getPublisher().getName());
 		map.addAttribute("pageUrl", "searchByPublisher?publisher.id=" + publisher.getId() + "&publisher.name=" + publisher.getName());
 
@@ -406,6 +419,11 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 		//Is this a parent category
 		Map<Long, Category> parentCategories = (Map<Long, Category>) context.getAttribute("parentCategoryMap");
+		
+		if(parentCategories == null) {
+			//Why?
+			return "404";
+		}
 
 		if(parentCategories.get(category.getId()) != null) {
 			//it is a parent category
@@ -579,6 +597,13 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 	@RequestMapping(value = "/searchByReadingList", method = RequestMethod.GET)
 	public String searchByReadingList(StockItemSearchBean searchBean, ModelMap map) {
+		
+		if(searchBean == null) {
+			//Bot?
+			logger.warn("searchByReadingList searchBean is null, bot??");
+			return null;
+		}
+		
 		ReadingList readingList = searchBean.getReadingList();
 
 		Pageable pageable = searchBean.getPageable();
