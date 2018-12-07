@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p>
+           Name : <span th:text="${contactForm.name}"></span>
+        </p>
+        <p>
+           Email : <span th:text="${contactForm.email}"></span>
+        </p>
+        <p>
+           Information : <span th:text="${contactForm.information}"></span>
+        </p>                
+    </body>
+</html>

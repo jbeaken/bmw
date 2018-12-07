@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p>
+           Name : <span th:text="${sponsorForm.name}"></span>
+        </p>
+        <p>
+           Amount : <span th:text="${sponsorForm.amount}"></span>
+        </p>
+        <p>
+           Email : <span th:text="${sponsorForm.email}"></span>
+        </p>
+        <p>
+           Telephone : <span th:text="${sponsorForm.telephone}"></span>
+        </p>        
+        <p>
+           Information : <span th:text="${sponsorForm.information}"></span>
+        </p>                
+    </body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p>
+           Name : <span th:text="${eventRegistrationForm.name}"></span>
+        </p>
+        <p>
+           Email : <span th:text="${eventRegistrationForm.email}"></span>
+        </p>
+        <p>
+           Telephone : <span th:text="${eventRegistrationForm.telephone}"></span>
+        </p>        
+        <p>
+           Event : <span th:text="${eventRegistrationForm.eventName}"></span>
+        </p>          
+        <p>
+           Other Information : <span th:text="${eventRegistrationForm.information}"></span>
+        </p>                
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Your Order Confirmation From Bookmarks</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    
+    <body>
+        <p>
+           Your Order Is Complete. Please quote reference number <span th:text="${webReference}"></span> in all correspondence.
+        </p>
+        <p>
+        	No money will be deducted from your account/card until your item(s) have been dispatched or are ready for collection
+        </p>
+        <p>
+        	Delivery Method : <span th:text="${customer.deliveryType.displayName}"></span>
+        </p>
+        <p>
+        	Paid By : <span th:text="${customer.paymentType.displayName}"></span>
+        </p>
+        
+		<table>
+			<thead>
+			</thead>
+				<tr th:each="orderLine, index : ${customer.orders}">
+					<td th:text="${orderLine.stockItem.title}"></td>
+					<td th:text="${orderLine.quantity}"></td>
+					<td>&pound;<span th:text="${#numbers.formatDecimal(orderLine.stockItem.sellPrice, 0, 'COMMA', 2, 'POINT')}"></span></td>
+					<td>&pound;<span th:text="${#numbers.formatDecimal(orderLine.totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></td>
+				</tr>
+		</table>
+					
+		<div class="basket_prices row">
+			<div>
+				<div>POSTAGE : &pound;<span th:text="${#numbers.formatDecimal(postage, 0, 'COMMA', 2, 'POINT')}"></span></div>
+				<div>TOTAL   : &pound;<span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></div>
+			</div>
+		</div>
+		
+    </body>
+</html>

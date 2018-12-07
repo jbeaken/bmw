@@ -1,19 +1,19 @@
 package org.bookmarks.website.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ChannelSecurityConfigurer.ChannelRequestMatcherRegistry;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-//@PropertySource("classpath:spring/application.dev.properties")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -21,8 +21,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser(environment.getProperty("beans.username")).password(environment.getProperty("beans.password")).authorities("ROLE_BEANS");
+		
+		String password = passwordEncoder().encode( environment.getProperty("beans.password") );
+		
+		auth.inMemoryAuthentication()
+			.withUser(environment.getProperty("beans.username"))
+			.password( password )
+			.authorities("ROLE_BEANS");
 	}
+	
+	@Bean
+    public PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
+    }
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
@@ -31,9 +42,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
 
 		http.authorizeRequests().anyRequest().permitAll();
+
+		//TODO
+		http.csrf().disable();		
+
+		http
+			.antMatcher("/website/**").authorizeRequests()
+			.anyRequest().hasRole("BEANS")
+			.and()
+		.httpBasic();
 
 		if (environment.acceptsProfiles("prod")) {
 			http.requiresChannel().anyRequest().requiresSecure();

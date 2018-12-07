@@ -27,6 +27,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.annotations.Store;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
@@ -279,6 +280,7 @@ public class StockItem {
 
     @NotNull
     @Field(index=Index.YES, store=Store.YES)
+    @SortableField(forField = "salesLastYear")
     private Integer salesLastYear;
 
     @NotNull

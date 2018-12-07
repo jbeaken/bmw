@@ -1,7 +1,6 @@
 package org.bookmarks.website.controller;
 
 import java.util.Date;
-import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -18,11 +17,13 @@ import org.bookmarks.website.domain.PaymentType;
 import org.bookmarks.website.domain.StockItem;
 import org.bookmarks.website.repository.CustomerRepository;
 import org.bookmarks.website.repository.StockItemRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -59,24 +61,31 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	@RequestMapping(value = "/{stockItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody StockItem addStockItemToCustomerOrder(@PathVariable("stockItemId") Long stockItemId, HttpSession session) {
 
-		Optional<StockItem> optional = stockItemRepository.findById(stockItemId);
+		StockItem stockItem = stockItemRepository.findById(stockItemId).orElse(null);
 		
-		StockItem stockItem = optional.get();
+		//HACK Json throws Lazy Init, move info to a non-hibernate class
+		StockItem detached = new StockItem();
+		detached.setTitle(stockItem.getTitle());
+		detached.setId(stockItem.getId());
+		detached.setImageFilename(stockItem.getImageFilename());
 
 		logger.info("Adding {} to customer order", stockItem);
 
 		CustomerOrder order = getCustomerOrder(session);
 		order.addOrderLine(stockItem);
 
-		return stockItem;
+		return detached;
 	}
 
 	@RequestMapping(value = "/addStockItemToCustomerOrderForMobile", method = RequestMethod.GET)
 	public String addStockItemToCustomerOrderForMobile(Long id, HttpSession session) {
 
-		Optional<StockItem> optional = stockItemRepository.findById(id);
+		if(id == null) {
+			//Bad bot
+			return "error";
+		}
 		
-		StockItem stockItem = optional.get();
+		StockItem stockItem = stockItemRepository.findById(id).orElse(null);
 
 		CustomerOrder order = getCustomerOrder(session);
 		order.addOrderLine(stockItem);
@@ -118,7 +127,7 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	public String emptyBasket(HttpSession session) {
 
 		// Remove customer order from session
-		// session.removeAttribute("order"); TODO think this was causing
+		// session.removeAttribute("order"); Think this was causing
 		// problems, but not sure how. Mike B saw it happen, but just a guess
 
 		return "redirect:/";
@@ -135,9 +144,13 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/showPaymentDetailsScreen")
 	public String showPaymentDetailsScreen(HttpSession session, ModelMap model) {
+		
+		logger.info("Customer request for showPaymentDetailsScreen");
+		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 
-		if (order == null) return "redirect:/";
+		if (order == null)
+			return "redirect:/";
 
 		model.addAttribute(order.getCustomer().getCreditCard());
 		return "customerOrder/paymentDetails";
@@ -145,12 +158,15 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/showCustomerDetailsScreen")
 	public String showCustomerDetailsScreen(String flow, HttpSession session, ModelMap model) {
+		
+		logger.info("Customer request for showCustomerDetailsScreen");
 
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 
 		if (order == null)	return "redirect:/";
 
-		// Is this from basket screen? If so could be that user has already entered details
+		// Is this from basket screen? If so could be that user has already
+		// entered details
 		if (order.getCustomer().getAddress().getAddress1() != null && order.getCustomer().getCreditCard().getCreditCard1() != null) {
 			// Details already completed, send to confirmation screen
 			return "customerOrder/confirmation";
@@ -165,6 +181,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/showDeliveryDetailsScreen")
 	public String showDeliveryDetailsScreen(HttpSession session, ModelMap model) {
+		
+		logger.info("Customer request for showDeliveryDetailsScreen");
+		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 
 		if (order == null)
@@ -190,7 +209,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 			return "customerOrder/customerDetails";
 		}
 
-		customer.setOrders(sessionOrder.getCustomer().getOrders());
+		customer.setOrders(sessionOrder.getCustomer().getOrders()); // Transfer
+																	// from
+																	// session
 		customer.setDeliveryType(sessionOrder.getCustomer().getDeliveryType());
 		customer.setPaymentType(sessionOrder.getCustomer().getPaymentType());
 
@@ -212,7 +233,6 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 		logger.info("Customer request for saveDeliveryDetails");
 		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
-		
 		if (order == null)
 			return "redirect:/";
 
@@ -244,8 +264,8 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 	@RequestMapping(value = "/savePaymentDetails")
 	public String savePaymentDetails(@Valid CreditCard creditCard, HttpSession session, ModelMap modelMap) {
 		
-		 logger.info("Customer request for savePaymentDetails"); 
-		 
+		logger.info("Customer request for saveDeliveryDetails"); 
+		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 		if (order == null)
 			return "redirect:/";
@@ -348,6 +368,9 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 
 	@RequestMapping(value = "/save")
 	public String save(HttpSession session) {
+		
+		logger.info("Customer request to save customer order"); 
+		
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 
 		if (order == null)
@@ -374,6 +397,8 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 			// Doesn't stop anything
 			logger.error("Cannot send email", e);
 		}
+		
+		logger.info("System has saved customer order {}, redirect to thank you page", webReference);
 
 		return "redirect:/customerOrder/thankYou";
 	}
@@ -383,7 +408,6 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 		return "customerOrder/thankYou";
 	}
 
-	// PRIVATE
 	private CustomerOrder getCustomerOrder(HttpSession session) {
 		CustomerOrder order = (CustomerOrder) session.getAttribute("order");
 		if (order == null) {
@@ -392,41 +416,81 @@ public class CustomerOrderController extends AbstractBookmarksWebsiteController 
 		}
 		return order;
 	}
+	
+//	@RequestMapping(value = "/mail")
+//	public String mail() throws MessagingException {
+//		
+//		Customer customer = customerRepository.findById(2l).orElse(null);
+//
+//		logger.info("Attempting sending email of order confirmation");
+//		
+//		final Context ctx = new Context();
+//		
+//		ctx.setVariable("customer", customerOrder.getCustomer());
+//		ctx.setVariable("postage", customerOrder.getPostage());
+//		ctx.setVariable("totalPrice", customerOrder.getTotalPrice());
+//		ctx.setVariable("webReference", webReference);
+//
+//		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+//		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
+//		
+//		String[] profiles = environment.getActiveProfiles();
+//		
+//		if (profiles.length != 0 && profiles[0].equals("prod")) {
+//			message.setSubject("Your Bookmarks Order Confirmation");
+//			message.setBcc("info@bookmarksbookshop.co.uk");
+//			message.setFrom("info@bookmarksbookshop.co.uk");
+//			message.setTo(customerOrder.getCustomer().getContactDetails().getEmail());
+//		} else {
+//			message.setSubject("TEST - Your Bookmarks Order Confirmation");
+//			message.setFrom("test@bookmarksbookshop.co.uk");
+//		}
+//
+//		// Create the HTML body using Thymeleaf
+//		final String htmlContent = this.templateEngine.process("/mail/orderComplete.html", ctx);
+//		message.setText(htmlContent, true); // true = isHtml
+//
+//		this.mailSender.send(mimeMessage);
+//
+//		logger.info("Sent!");
+//		
+//		return "home";
+//	}
 
+	
 	private void sendOrderConfirmation(CustomerOrder customerOrder, String webReference) throws MessagingException {
-		
-		logger.info("Attempting sending email of order confirmation");
 
+		logger.info("Attempting sending email of order confirmation");
+		
 		final Context ctx = new Context();
+		
 		ctx.setVariable("customer", customerOrder.getCustomer());
 		ctx.setVariable("postage", customerOrder.getPostage());
 		ctx.setVariable("totalPrice", customerOrder.getTotalPrice());
 		ctx.setVariable("webReference", webReference);
-		
-		
 
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
-
+		
 		String[] profiles = environment.getActiveProfiles();
 		
-		if (profiles[0].equals("dev") || profiles[0].equals("test")) {
-			message.setSubject("TEST - Your Bookmarks Order Confirmation");
-			message.setFrom("test@bookmarksbookshop.co.uk");
-		} else {
+		if (profiles.length != 0 && profiles[0].equals("prod")) {
 			message.setSubject("Your Bookmarks Order Confirmation");
 			message.setBcc("info@bookmarksbookshop.co.uk");
 			message.setFrom("info@bookmarksbookshop.co.uk");
 			message.setTo(customerOrder.getCustomer().getContactDetails().getEmail());
+		} else {
+			message.setSubject("TEST - Your Bookmarks Order Confirmation");
+			message.setFrom("test@bookmarksbookshop.co.uk");
+			message.setTo("jack747@gmail.com");
 		}
 
 		// Create the HTML body using Thymeleaf
 		final String htmlContent = this.templateEngine.process("/mail/orderComplete.html", ctx);
 		message.setText(htmlContent, true); // true = isHtml
 
-		// Send mail
 		this.mailSender.send(mimeMessage);
-		
+
 		logger.info("Sent!");
 	}
 }

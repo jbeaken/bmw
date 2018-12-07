@@ -1,5 +1,6 @@
 package org.bookmarks.website;
 
+import java.util.Collections;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import org.springframework.core.env.Environment;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @SpringBootApplication
 public class BmwBootApplication extends SpringBootServletInitializer {
@@ -23,26 +28,19 @@ public class BmwBootApplication extends SpringBootServletInitializer {
 
 	@Autowired
 	private Environment environment;
+	
 
-	/**
-	 * Mailer
-	 */
 	@Bean
-	public JavaMailSender javaMailService() {
-		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("auth.smtp.1and1.co.uk");
-		mailSender.setPort(587);
-		mailSender.setUsername("auth.smtp.1and1.co.uk");
-		mailSender.setPassword("auth.smtp.1and1.co.uk");
+    public ITemplateResolver emailTemplateResolver() {
+		final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 
-		Properties properties = new Properties();
-		properties.setProperty("mail.transport.protocol", "smtp");
-		properties.setProperty("mail.smtp.auth", "true");
-		properties.setProperty("mail.smtp.starttls.enable", "true");
-		properties.setProperty("mail.debug", "false");
+		templateResolver.setOrder(Integer.valueOf(1));
+		templateResolver.setResolvablePatterns(Collections.singleton("/mail/*"));
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		templateResolver.setCharacterEncoding("UTF-8");
 
-		mailSender.setJavaMailProperties(properties);
-
-		return mailSender;
+		return templateResolver;
 	}
+	
+	
 }
