@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
     }
 )
 @Entity
-@JsonIgnoreProperties(value = { "hasBeenConsumed", "totalPrice", "customer" })
+@JsonIgnoreProperties(value = { "customer" })
 public class OrderLine extends AbstractEntity {
 
     @NotNull private String webReference;
