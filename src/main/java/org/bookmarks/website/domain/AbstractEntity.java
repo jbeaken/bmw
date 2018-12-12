@@ -6,7 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 @MappedSuperclass
 public abstract class AbstractEntity implements java.io.Serializable {
@@ -16,7 +17,7 @@ public abstract class AbstractEntity implements java.io.Serializable {
 	protected Long id;
 
 	@NotNull
-	private LocalDateTime dateCreated = LocalDateTime.now();
+	private Date dateCreated = new Date();
 
 	public Long getId() {
 		return id;
@@ -26,11 +27,11 @@ public abstract class AbstractEntity implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public LocalDateTime getDateCreated() {
+	public Date getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(LocalDateTime dateCreated) {
+	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 }
