@@ -21,7 +21,7 @@ import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@JsonIgnoreProperties(value = { "hasBeenConsumed" })
+@JsonIgnoreProperties(value = { "hasBeenConsumed", "pendingConsumption" })
 public class Customer extends AbstractEntity {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true, fetch = FetchType.EAGER)
