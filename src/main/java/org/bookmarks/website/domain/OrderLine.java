@@ -12,6 +12,8 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.TypeDef;
 import org.jasypt.hibernate5.type.EncryptedStringType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @TypeDef(
     name="encryptedString",
@@ -21,26 +23,28 @@ import org.jasypt.hibernate5.type.EncryptedStringType;
     }
 )
 @Entity
+@JsonIgnoreProperties(value = { "hasBeenConsumed", "totalPrice", "customer" })
 public class OrderLine extends AbstractEntity {
 
     @NotNull private String webReference;
-    
-	@ManyToOne //TODO name it stock_item_id
+
+	@ManyToOne
 	@NotNull private StockItem stockItem;
-	
+
 	@NotNull private Integer quantity;
-	
+
 	@NotNull private Boolean isSecondHand = false;
-	
+
 	@Min(value=0)
-	@NotNull private BigDecimal sellPrice; 
-	
+	@NotNull private BigDecimal sellPrice;
+
 	@Min(value=0) private BigDecimal postage; //Shouldn't really be here but customerorder is not sent over the pipe
-	
+
 	@ManyToOne
 	@JoinColumn(name="customer_id", nullable=false)
+//	@JsonIgnore
 	private Customer customer;
-	
+
 	//ACCESSORS
 	public BigDecimal getSellPrice() {
 		return sellPrice;
@@ -50,7 +54,7 @@ public class OrderLine extends AbstractEntity {
 	}
 	public StockItem getStockItem() {
 		return stockItem;
-	}	
+	}
 	public void setStockItem(StockItem stockItem) {
 		this.stockItem = stockItem;
 	}
@@ -60,19 +64,19 @@ public class OrderLine extends AbstractEntity {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
-	
+
 	public Customer getCustomer() {
 		return customer;
 	}
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-	
+
 	//METHODS
 	public BigDecimal getTotalPrice() {
 		return stockItem.getSellPrice().multiply(new BigDecimal(quantity));
 	}
-	
+
 	public void incrementQuantity(Integer value) {
 		setQuantity(getQuantity() + value);
 	}

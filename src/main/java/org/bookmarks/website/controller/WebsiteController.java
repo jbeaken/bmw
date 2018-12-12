@@ -237,7 +237,7 @@ public class WebsiteController {
 	// @RequestMapping(value = "/getOrders", method = RequestMethod.POST,
 	// produces = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(value = "/getOrders", method = RequestMethod.GET)
-	public @ResponseBody String getOrders(String beansSha512, String message) throws JsonProcessingException {
+	public @ResponseBody String getOrders() throws JsonProcessingException {
 
 		logger.info("Transferring customers from chips to beans....");
 
