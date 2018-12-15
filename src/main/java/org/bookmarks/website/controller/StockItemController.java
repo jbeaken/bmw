@@ -57,76 +57,73 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 	@PersistenceContext
 	private EntityManager em;
 
-    @Autowired
-    private StockItemRepository stockItemRepository;
+	@Autowired
+	private StockItemRepository stockItemRepository;
 
-    @Autowired
-    private AuthorRepository authorRepository;
+	@Autowired
+	private AuthorRepository authorRepository;
 
-    @Autowired
+	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@Autowired
 	private ServletContext context;
 
-    private final CharArraySet stopWords = new StandardAnalyzer().getStopwordSet();
+	private final CharArraySet stopWords = new StandardAnalyzer().getStopwordSet();
 
-    final static Logger logger = LoggerFactory.getLogger(StockItemController.class);
+	final static Logger logger = LoggerFactory.getLogger(StockItemController.class);
 
-    /**
-     * Get the stock item, return json, used by sw
-     */
-    @RequestMapping(value = "/getJson/{isbn}", method=RequestMethod.GET)
-    public @ResponseBody StockItem getJson(@PathVariable("isbn") Long isbn, ModelMap modelMap, HttpServletResponse response) {
+	/**
+	 * Get the stock item, return json, used by sw
+	 */
+	@RequestMapping(value = "/getJson/{isbn}", method = RequestMethod.GET)
+	public @ResponseBody StockItem getJson(@PathVariable("isbn") Long isbn, ModelMap modelMap,
+			HttpServletResponse response) {
 
-    	logger.info(isbn + "");
-    	StockItem stockItem = stockItemRepository.findByISBN(isbn);
-    	List<String> result = new ArrayList<String>();
-    	result.add(stockItem.getTitle());
-    	logger.info(stockItem.toString());
-    	return stockItem;
-    }
+		logger.info(isbn + "");
+		StockItem stockItem = stockItemRepository.findByISBN(isbn);
+		List<String> result = new ArrayList<String>();
+		result.add(stockItem.getTitle());
+		logger.info(stockItem.toString());
+		return stockItem;
+	}
 
-    /*
-    @RequestMapping(value = "/view")
-    public String view(Long id, ModelMap modelMap) {
-        StockItem stockItem = stockItemRepository.findOne(id);
-
-        Pageable pageable = new PageRequest(0, 5);
-
-        List<StockItem> interesting = stockItemRepository.findByCategoryWithImage(stockItem.getCategory().getId(), pageable);
-
-        modelMap.addAttribute(stockItem);
-        modelMap.addAttribute("interesting", interesting);
-        return "public/view";
-    }
-
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
-        StockItem stockItem = stockItemRepository.findOne(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (stockItem == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(stockItem.toJson(), headers, HttpStatus.OK);
-    }
-    */
+	/*
+	 * @RequestMapping(value = "/view") public String view(Long id, ModelMap
+	 * modelMap) { StockItem stockItem = stockItemRepository.findOne(id);
+	 * 
+	 * Pageable pageable = new PageRequest(0, 5);
+	 * 
+	 * List<StockItem> interesting =
+	 * stockItemRepository.findByCategoryWithImage(stockItem.getCategory().getId(),
+	 * pageable);
+	 * 
+	 * modelMap.addAttribute(stockItem); modelMap.addAttribute("interesting",
+	 * interesting); return "public/view"; }
+	 * 
+	 * @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	 * 
+	 * @ResponseBody public ResponseEntity<String> showJson(@PathVariable("id") Long
+	 * id) { StockItem stockItem = stockItemRepository.findOne(id); HttpHeaders
+	 * headers = new HttpHeaders(); headers.add("Content-Type",
+	 * "application/json; charset=utf-8"); if (stockItem == null) { return new
+	 * ResponseEntity<String>(headers, HttpStatus.NOT_FOUND); } return new
+	 * ResponseEntity<String>(stockItem.toJson(), headers, HttpStatus.OK); }
+	 */
 	@RequestMapping(value = "/searchIndex")
 	public String searchIndex(StockItemSearchBean searchBean, ModelMap map) {
-		if(searchBean.getQ() ==  null) {
+		if (searchBean.getQ() == null) {
 			return "redirect:/";
 		}
 
 		String q = searchBean.getQ().trim();
 
-		if(q.isEmpty()) {
+		if (q.isEmpty()) {
 			return "redirect:/";
 		}
 
-		//Is this an ISBN lookup?
-		if(q.length() == 13) { //TODO Not handling isbn 10 yet
+		// Is this an ISBN lookup?
+		if (q.length() == 13) { // TODO Not handling isbn 10 yet
 			try {
 				Long isbnAsNumber = Long.parseLong(q);
 
@@ -134,7 +131,7 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 				List<StockItem> stockItems = new ArrayList<StockItem>(1);
 
-				if(stockItem == null) {//No result
+				if (stockItem == null) {// No result
 					searchBean.setCount(0l);
 				} else {
 					stockItems.add(stockItem);
@@ -145,52 +142,53 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 				buildModelForIndexSearch(map, searchBean, q);
 				return "/public/search";
 
-			} catch(NumberFormatException e) {
-				//Nope, just do regular search
+			} catch (NumberFormatException e) {
+				// Nope, just do regular search
 			}
 		}
 
 		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(em);
-		//em.getTransaction().begin();
+		// em.getTransaction().begin();
 
 		// create native Lucene query unsing the query DSL
 		// alternatively you can write the Lucene query using the Lucene query parser})
-		// or the Lucene programmatic API. The Hibernate Search DSL is recommended though
-		QueryBuilder qb = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity( StockItem.class ).get();
+		// or the Lucene programmatic API. The Hibernate Search DSL is recommended
+		// though
+		QueryBuilder qb = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(StockItem.class).get();
 
 		final BooleanJunction<BooleanJunction> bool = qb.bool();
 
-		//Tokenise search
+		// Tokenise search
 //		q = q.replace("  ", " "); //Check for double spaces, is there a way to convert multispace into unispace?
-		//String q = q.replaceAll(" +", " ");
+		// String q = q.replaceAll(" +", " ");
 
-		q = q.toLowerCase(); //Othewise throws error with A, The
+		q = q.toLowerCase(); // Othewise throws error with A, The
 
 		StringTokenizer tokeniser = new StringTokenizer(q, " ");
-		while(tokeniser.hasMoreElements()) {
+		while (tokeniser.hasMoreElements()) {
 			String token = tokeniser.nextToken();
 			logger.debug("Token : " + token);
-			if(stopWords.contains(token)) continue;
+			if (stopWords.contains(token))
+				continue;
 			Query local = qb.keyword().onFields("title", "authors.name").matching(token).createQuery();
 			bool.must(local);
 		}
 
 		org.apache.lucene.search.Query luceneQuery = bool.createQuery();
 
-/*
-		org.apache.lucene.search.Query luceneQuery = qb
-		  .keyword()
-		  //.onFields("title", "subtitle", "authors.name")
-		  .onFields("title", "authors.name")
-		  .matching(q)
-		  .createQuery();
-		  */
+		/*
+		 * org.apache.lucene.search.Query luceneQuery = qb .keyword()
+		 * //.onFields("title", "subtitle", "authors.name") .onFields("title",
+		 * "authors.name") .matching(q) .createQuery();
+		 */
 		// wrap Lucene query in a javax.persistence.Query
-		org.hibernate.search.jpa.FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, StockItem.class);
-		//javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, StockItem.class);
-		//persistenceQuery.setProjection( "id", "summary", "body", "mainAuthor.name" );
+		org.hibernate.search.jpa.FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(luceneQuery,
+				StockItem.class);
+		// javax.persistence.Query persistenceQuery =
+		// fullTextEntityManager.createFullTextQuery(luceneQuery, StockItem.class);
+		// persistenceQuery.setProjection( "id", "summary", "body", "mainAuthor.name" );
 
-		//Sort by score, then sales
+		// Sort by score, then sales
 		SortField scoreSortField = new SortField(null, SortField.Type.SCORE, false);
 		SortField qisSortField = new SortField("quantityInStock", SortField.Type.INT, true);
 		SortField salesLastYearSortField = new SortField("salesLastYear", SortField.Type.INT, true);
@@ -203,12 +201,15 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 		fullTextQuery.setSort(sort);
 
-		fullTextQuery.setProjection("id", "title", "sellPrice", "reviewShort", "type", "imageUrl", "noOfPages", "dimensions", "publishedDate", "isbn", "availability", "binding", "publisher.name", "publisher.id", "imageFilename", "quantityInStock", "salesLastYear", "postage", "alwaysInStock", "gardnersStockLevel", "isAvailableAtSuppliers");
+		fullTextQuery.setProjection("id", "title", "sellPrice", "reviewShort", "type", "imageUrl", "noOfPages",
+				"dimensions", "publishedDate", "isbn", "availability", "binding", "publisher.name", "publisher.id",
+				"imageFilename", "quantityInStock", "salesLastYear", "postage", "alwaysInStock", "gardnersStockLevel",
+				"isAvailableAtSuppliers");
 		List results = fullTextQuery.getResultList();
 
 		List<StockItem> stockItems = new ArrayList<StockItem>(10);
 
-		for(Object r : results) {
+		for (Object r : results) {
 			Object[] result = (Object[]) r;
 			Long id = (Long) result[0];
 			String title = (String) result[1];
@@ -259,22 +260,21 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 			stockItem.setPublisher(publisher);
 
+			// List<Author> authors = authorRepository.getForStockItem(id);
+			// stockItem.setAuthors(new HashSet<Author>(authors));
 
-			//List<Author> authors = authorRepository.getForStockItem(id);
-			//stockItem.setAuthors(new HashSet<Author>(authors));
-
-			//List<Category> categories = categoryRepository.getForStockItem(id);
-			//stockItem.setCategories(new HashSet<Category>(categories));
+			// List<Category> categories = categoryRepository.getForStockItem(id);
+			// stockItem.setCategories(new HashSet<Category>(categories));
 
 			stockItems.add(stockItem);
 		}
 
 		long count = fullTextQuery.getResultSize();
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
-		//Fill search bean
+		// Fill search bean
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
@@ -288,7 +288,7 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 	}
 
 	private void buildModelForIndexSearch(ModelMap map, StockItemSearchBean searchBean, String q) {
-		map.addAttribute("searchBean",searchBean);
+		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("q", q);
 		map.addAttribute("searchTitle", q);
 		map.addAttribute("pageUrl", "searchIndex?q=" + q);
@@ -299,20 +299,19 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		Author author = searchBean.getAuthor();
 		Pageable pageable = searchBean.getPageable();
 
-		if(author == null || author.getId() == null) {
-			//bad bot
+		if (author == null || author.getId() == null) {
+			// bad bot
 			return "error";
 		}
 
 		List<StockItem> stockItems = stockItemRepository.findByAuthor(author.getId(), pageable);
 		Long count = stockItemRepository.countByAuthor(author.getId());
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
-
 
 //		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", author.getName());
@@ -328,12 +327,11 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findById(pageable);
 		Long count = 100l;
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
-
 
 //		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", "New Arrivals");
@@ -345,9 +343,9 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 	@RequestMapping(value = "/searchByPublisher", method = RequestMethod.GET)
 	public String searchByPublisher(StockItemSearchBean searchBean, ModelMap map) {
 		Publisher publisher = searchBean.getPublisher();
-		
-		if(publisher == null) {
-			//Is this a bot?
+
+		if (publisher == null) {
+			// Is this a bot?
 			logger.warn("searchByPublisher publisher is null, bot??");
 			return "/public/search";
 		}
@@ -355,20 +353,21 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		Pageable pageable = searchBean.getPageable();
 
 		List<StockItem> stockItems = stockItemRepository.findByPublisher(publisher.getId(), pageable);
-		if(stockItems.isEmpty()) {
-			//What's going on?
+		if (stockItems.isEmpty()) {
+			// What's going on?
 			return "/public/search";
 		}
 		Long count = stockItemRepository.countByPublisher(publisher.getId());
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
 		map.addAttribute("searchTitle", stockItems.get(0).getPublisher().getName());
-		map.addAttribute("pageUrl", "searchByPublisher?publisher.id=" + publisher.getId() + "&publisher.name=" + publisher.getName());
+		map.addAttribute("pageUrl",
+				"searchByPublisher?publisher.id=" + publisher.getId() + "&publisher.name=" + publisher.getName());
 
 		return "/public/search";
 	}
@@ -382,19 +381,19 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		Long count = null;
 		List<StockItem> stockItems = null;
 
-		if(publisher.getId().equals(725l)) {
-			//bookmarks, therefore include redwords
+		if (publisher.getId().equals(725l)) {
+			// bookmarks, therefore include redwords
 			List<Long> ids = new ArrayList<Long>();
-			ids.add( 725l );
-			ids.add( 729l );
+			ids.add(725l);
+			ids.add(729l);
 			stockItems = stockItemRepository.findByMultiplePublisherOrderByPublishedDate(ids, pageable);
-			count = stockItemRepository.countByMultiplePublisher( ids );
+			count = stockItemRepository.countByMultiplePublisher(ids);
 		} else {
 			stockItems = stockItemRepository.findByPublisherOrderByPublishedDate(publisher.getId(), pageable);
 			count = stockItemRepository.countByPublisher(publisher.getId());
 		}
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
@@ -403,7 +402,8 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", stockItems.get(0).getPublisher().getName());
 		map.addAttribute("publisherId", publisher.getId());
-		map.addAttribute("pageUrl", "searchByPublisherOrderByPublishedDate?publisher.id=" + publisher.getId() + "&publisher.name=" + publisher.getName());
+		map.addAttribute("pageUrl", "searchByPublisherOrderByPublishedDate?publisher.id=" + publisher.getId()
+				+ "&publisher.name=" + publisher.getName());
 
 		return "/public/search";
 	}
@@ -417,38 +417,34 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		Long count = null;
 		Pageable pageable = searchBean.getPageable();
 
-		//Is this a parent category
+		// Is this a parent category
 		Map<Long, Category> parentCategories = (Map<Long, Category>) context.getAttribute("parentCategoryMap");
-		
-		if(parentCategories == null) {
-			//Why?
+
+		if (parentCategories == null) {
+			// Why?
 			return "404";
 		}
 
-		if(parentCategories.get(category.getId()) != null) {
-			//it is a parent category
+		if (parentCategories.get(category.getId()) != null) {
+			// it is a parent category
 			stockItems = stockItemRepository.findByParentCategory(category.getId(), pageable);
 			count = stockItemRepository.countByParentCategory(category.getId());
 		} else {
-			//Stream<StockItem> stockItemStream = stockItemRepository.findByCategory(category.getId(), pageable);
 			stockItems = stockItemRepository.findByCategory(category.getId(), pageable);
 
-			//stockItemStream.collect(Collectors.toList());
-			//stockItemStream.close();
 			count = stockItemRepository.countByCategory(category.getId());
 		}
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
 		long end = System.currentTimeMillis();
-		double time = (end - start) ;
+		double time = (end - start);
 		logger.debug("Search with n+1 : " + time);
 
-//		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", category.getName());
 		map.addAttribute("pageUrl", "searchByCategory?category.id=" + category.getId() + "&category.name=" + category.getName());
 
@@ -456,7 +452,7 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 	}
 
 	private void populateAuthors(List<StockItem> stockItems) {
-		for(StockItem si : stockItems) {
+		for (StockItem si : stockItems) {
 			List<Author> authors = authorRepository.getForStockItem(si.getId());
 			si.setAuthors(new HashSet<Author>(authors));
 		}
@@ -472,18 +468,16 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findByCategory2(category.getId(), pageable);
 		Long count = stockItemRepository.countByCategory(category.getId());
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
 		long end = System.currentTimeMillis();
-		double time = (end - start) ;
+		double time = (end - start);
 		logger.debug("Search eager fetch : " + time);
 
-//		map.addAttribute("searchBean", searchBean);
-//		map.addAttribute("categoryName", category.getName());
 		map.addAttribute("pageUrl", "searchByCategory2?category.id=" + category.getId() + "&category.name=" + category.getName());
 
 		return "/public/search";
@@ -497,34 +491,28 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findEbooks(pageable);
 		Long count = stockItemRepository.countByEbook();
 
-		//Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
-
-//		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", "Ebooks");
-		map.addAttribute("pageUrl", "findEbooks");
+		map.addAttribute("pageUrl", "searchByEbooks");
 
 		return "/public/search";
 	}
 
+	@RequestMapping(value = "/showXmasCards", method = RequestMethod.GET)
+	public String showXmasCards(StockItemSearchBean searchBean, ModelMap map) {
 
-		@RequestMapping(value = "/showXmasCards", method = RequestMethod.GET)
-		public String showXmasCards(StockItemSearchBean searchBean, ModelMap map) {
+		List<StockItem> stockItems = stockItemRepository.findXmasCards();
+		Integer count = stockItems.size();
 
-			Pageable pageable = searchBean.getPageable();
+		map.addAttribute("bouncies", stockItems);
+		map.addAttribute("count", count);
 
-			List<StockItem> stockItems = stockItemRepository.findXmasCards()	;
-			Integer count = stockItems.size();
-
-			map.addAttribute("bouncies", stockItems);
-			map.addAttribute("count", count);
-
-			return "/public/bouncies";
-		}
+		return "/public/bouncies";
+	}
 
 	@RequestMapping(value = "/searchByType", method = RequestMethod.GET)
 	public String searchByType(StockItemSearchBean searchBean, ModelMap map) {
@@ -535,12 +523,11 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findByType(type, pageable);
 		Long count = stockItemRepository.countByType(type);
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
-
 
 //		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", type.getDisplayName());
@@ -558,12 +545,11 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findByType(type, pageable);
 		Long count = stockItemRepository.countByType(type);
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
-
 
 //		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", type.getDisplayName());
@@ -572,21 +558,18 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		return "/public/search";
 	}
 
-
-
 	@RequestMapping(value = "/searchByNewReleases", method = RequestMethod.GET)
 	public String searchByNewReleases(StockItemSearchBean searchBean, ModelMap map) {
 		Pageable pageable = searchBean.getPageable();
 
-		List<StockItem> stockItems = stockItemRepository.findByNewReleases( pageable);
+		List<StockItem> stockItems = stockItemRepository.findByNewReleases(pageable);
 		Long count = 50l;
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
-
 
 //		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", "New Releases");
@@ -597,13 +580,13 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 
 	@RequestMapping(value = "/searchByReadingList", method = RequestMethod.GET)
 	public String searchByReadingList(StockItemSearchBean searchBean, ModelMap map) {
-		
-		if(searchBean == null) {
-			//Bot?
+
+		if (searchBean == null) {
+			// Bot?
 			logger.warn("searchByReadingList searchBean is null, bot??");
 			return null;
 		}
-		
+
 		ReadingList readingList = searchBean.getReadingList();
 
 		Pageable pageable = searchBean.getPageable();
@@ -611,16 +594,16 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		List<StockItem> stockItems = stockItemRepository.findByReadingList(readingList.getId(), pageable);
 		Long count = stockItemRepository.countByReadingList(readingList.getId());
 
-		//Get authors
+		// Get authors
 		populateAuthors(stockItems);
 
 		searchBean.setResults(stockItems);
 		searchBean.setCount(count);
 
-
 		map.addAttribute("searchBean", searchBean);
 		map.addAttribute("searchTitle", readingList.getName());
-		map.addAttribute("pageUrl", "searchByReadingList?readingList.id=" + readingList.getId() + "&readingList.name=" + readingList.getName());
+		map.addAttribute("pageUrl", "searchByReadingList?readingList.id=" + readingList.getId() + "&readingList.name="
+				+ readingList.getName());
 
 		return "/public/search";
 	}

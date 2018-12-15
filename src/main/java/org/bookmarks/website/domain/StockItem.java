@@ -23,19 +23,41 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.standard.StandardFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.search.annotations.Parameter;
 
 @Entity
-@Indexed
+@Indexed()
+@AnalyzerDef(name = "bmwAnalyzer",
+
+tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), 
+
+filters = {
+
+  @TokenFilterDef(factory = StandardFilterFactory.class),
+  
+  @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+  
+  @TokenFilterDef(factory = StopFilterFactory.class)
+
+})
 @JsonIgnoreProperties(value = { "showVerticalImage", "whatIsIt", "viewUrl", "merchandiseIndex", "addToBasketUrl", "alwaysInStock", "hasImage", "vat", "originalImageUrl", "htmlTitle", "mainAuthor", "stickyType", "stickyCategory", "priceThirdPartySecondHand", "dimensions", "imageURL", "priceAtAZ", "dateCreated", "height", "categoryName", "noOfPages", "gardnersStockLevel", "isAvailableAtSuppliers", "type", "priceThirdPartyCollectable", "stickyTypeIndex", "cleanTitleForUrl", "cleanTitleForUrl", "availabilityMessage", "thumbnailImageUrl", "smallerImageUrl", "imageUrlForEmail", "imageUrl", "bouncyTitle", "bouncyTitle", "shortTitle", "fullPostage", "reviewForSearch", "isSecondHand", "parentCategoryId", "priceThirdPartyNew", "depth"})
 public class StockItem {
 
@@ -110,7 +132,6 @@ public class StockItem {
 		Long qis = getQuantityInStock();
 
 		if(qis > 0 || (gardnersStockLevel != null && gardnersStockLevel > 0) || (isAvailableAtSuppliers != null && isAvailableAtSuppliers)) {
-			//return "<span class=\"in_stock\">In stock</span>";
 			return "In Stock";
 		}
 
@@ -118,26 +139,20 @@ public class StockItem {
 
 		switch(getAvailability()) {
 			case OUT_OF_PRINT :
-//				message = "<span class=\"second_hand\">Only available second hand</span>";
 				message = "Only available second hand";
 				break;
 			case NOT_YET_PUBLISHED :
-//				message = "<span class=\"not_yet_published\">Available for pre-order</span>";
 				message = "Available for pre-order";
 				break;
 			default :  //For published, or available new
-//				message = "<span class=\"can_be_ordered_in\">Can be ordered in</span>";
 				message = "Can be ordered in";
 		}
 		return message;
 	}
 
  	@Id
- 	//Has to insert using beans id, no strategy
-//    @GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id;
 
-	//@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDate")
     private Date dateCreated = new Date();
 
 	//What should be on website
@@ -194,7 +209,6 @@ public class StockItem {
 
     @ManyToMany(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE}, fetch=FetchType.EAGER)
     @JoinTable(joinColumns = { @JoinColumn(name = "stockitem_id") }, inverseJoinColumns = { @JoinColumn(name = "author_id") })
-//    @NotNull
     @IndexedEmbedded(includeEmbeddedObjectId=true)
     private Set<Author> authors;
 
@@ -207,12 +221,6 @@ public class StockItem {
 
     @Column(name="parent_category_id")
     private Long parentCategoryId;
-
-
-/*    @ManyToMany(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE})
-    @JoinTable(joinColumns = { @JoinColumn(name="stockitem_id") }, inverseJoinColumns = { @JoinColumn(name = "reading_list_id") })
-    @NotNull
-    private List<ReadingList> readingLists;   */
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -234,7 +242,6 @@ public class StockItem {
     @Column(name="review_as_html", columnDefinition="text")
     private String reviewAsHTML;
 
-//    @Field(index=Index.NO, store=Store.YES)
     private String dimensions;
 
     @Min(0)
@@ -301,10 +308,8 @@ public class StockItem {
     @Field(index=Index.NO, store=Store.YES)
     private Binding binding;
 
-//    @ManyToOne(cascade={javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE}, fetch=FetchType.LAZY)
     @NotNull
     @Embedded
-//    @JoinColumn(name="publisher_id")
     @IndexedEmbedded(includeEmbeddedObjectId=true)
     private Publisher publisher;
 
