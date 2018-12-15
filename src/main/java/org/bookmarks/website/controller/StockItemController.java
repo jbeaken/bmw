@@ -497,7 +497,7 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		searchBean.setCount(count);
 
 		map.addAttribute("searchTitle", "Ebooks");
-		map.addAttribute("pageUrl", "searchByEbooks");
+		map.addAttribute("pageUrl", "searchByEbooks?");
 
 		return "/public/search";
 	}
