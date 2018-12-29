@@ -23,12 +23,14 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.lucene.analysis.ngram.NGramFilterFactory;
+import org.apache.lucene.analysis.charfilter.MappingCharFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.CharFilterDef;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
@@ -47,6 +49,13 @@ import org.hibernate.search.annotations.Parameter;
 @Indexed()
 @AnalyzerDef(name = "bmwAnalyzer",
 
+//charFilters = {
+//	    @CharFilterDef(factory = MappingCharFilterFactory.class, params = {
+//	      @Parameter(name = "mapping",
+//	        value = "org/hibernate/search/test/analyzer/mapping-chars.properties")
+//	    })
+//	  },
+
 tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), 
 
 filters = {
@@ -55,8 +64,12 @@ filters = {
   
   @TokenFilterDef(factory = LowerCaseFilterFactory.class),
   
-  @TokenFilterDef(factory = StopFilterFactory.class)
-
+  @TokenFilterDef(factory = StopFilterFactory.class),
+  
+//  @TokenFilterDef(factory = NGramFilterFactory.class,
+//  params = {
+//    @Parameter(name = "minGramSize", value = "3"),
+//    @Parameter(name = "maxGramSize", value = "3") } )
 })
 @JsonIgnoreProperties(value = { "showVerticalImage", "whatIsIt", "viewUrl", "merchandiseIndex", "addToBasketUrl", "alwaysInStock", "hasImage", "vat", "originalImageUrl", "htmlTitle", "mainAuthor", "stickyType", "stickyCategory", "priceThirdPartySecondHand", "dimensions", "imageURL", "priceAtAZ", "dateCreated", "height", "categoryName", "noOfPages", "gardnersStockLevel", "isAvailableAtSuppliers", "type", "priceThirdPartyCollectable", "stickyTypeIndex", "cleanTitleForUrl", "cleanTitleForUrl", "availabilityMessage", "thumbnailImageUrl", "smallerImageUrl", "imageUrlForEmail", "imageUrl", "bouncyTitle", "bouncyTitle", "shortTitle", "fullPostage", "reviewForSearch", "isSecondHand", "parentCategoryId", "priceThirdPartyNew", "depth"})
 public class StockItem {

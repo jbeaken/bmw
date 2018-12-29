@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+
+		<encoder>
+
+			<pattern>%d %5p | %-55logger{55} | %m %n</pattern>
+
+		</encoder>
+
+	</appender>
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>/home/bookmarks/logs/bmw.log</file>
+
+		<encoder>
+			<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder
+				by default -->
+			<Pattern>%d{yyyy-MM-dd_HH:mm:ss} %-5level %logger{0} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${catalina.base}/logs/testproject.%i.log.zip
+			</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>10</MaxIndex>
+		</rollingPolicy>
+
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+
+	</appender>
+
+	<logger name="org.bookmarks">
+		<if condition='property("spring.profiles.active").contains("prod")'>
+			<then>
+				<level value="INFO" />
+			</then>
+			<else>
+				<level value="DEBUG" />
+			</else>
+		</if>
+	</logger>
+
+	<logger name="org.hibernate.search">
+		<level value="DEBUG" />
+	</logger>
+
+	<logger name="org.apache.lucene">
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.springframework.web.servlet">
+		<level value="INFO" />
+	</logger>
+
+<!--
+
+	<logger name="org.hibernate.type">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.springframework.orm.jpa">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="com.github.dandelion">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.springframework">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.springframework.security">
+		<level value="DEBUG" />
+	</logger>
+ -->
+	
+	<root>
+		<if condition='property("spring.profiles.active").contains("prod")'>
+			<then>
+				<level value="WARN" />
+			</then>
+			<else>
+				<level value="INFO" />
+			</else>
+		</if>
+
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

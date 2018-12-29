@@ -24,13 +24,13 @@ import org.bookmarks.website.domain.DeliveryType;
 import org.bookmarks.website.domain.PaymentType;
 import org.bookmarks.website.domain.StockItem;
 import org.bookmarks.website.domain.StockItemType;
-import org.bookmarks.website.repository.EventRepository;
 import org.bookmarks.website.repository.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,9 +52,6 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 
 	@Autowired
 	private StockItemRepository stockItemRepository;
-
-	@Autowired
-	private EventRepository eventRepository;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -89,14 +86,14 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 			return "public/home";
 		}
 
-		Pageable pageable = new PageRequest(0, 5);
+		Pageable pageable = PageRequest.of(0, 5);
 
 		List<StockItem> interesting = stockItemRepository.findByCategoryWithImage(stockItem.getCategory().getId(), pageable);
 
 		// Add authors books
 		List<StockItem> authorsOtherBooks = new ArrayList<StockItem>(5);
 		for (Author a : stockItem.getAuthors()) {
-			pageable = new PageRequest(0, 5 - authorsOtherBooks.size());
+			pageable = PageRequest.of(0, 5 - authorsOtherBooks.size());
 			List<StockItem> local = stockItemRepository.findAuthorsOtherStockItems(a.getId(), stockItemId, pageable);
 			authorsOtherBooks.addAll(local);
 			if (authorsOtherBooks.size() > 4)
@@ -387,7 +384,7 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 
 	@RequestMapping(value = "/xmas", method = RequestMethod.GET)
 	public String xmas(ModelMap model) {
-		Collection<StockItem> stockItems = stockItemRepository.findByType(StockItemType.MUG, new PageRequest(0, 10));
+		Collection<StockItem> stockItems = stockItemRepository.findByType(StockItemType.MUG,  PageRequest.of(0, 10));
 		model.addAttribute(stockItems);
 		return "public/xmas";
 	}
@@ -412,6 +409,8 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 
 	@RequestMapping(value = "/contact", method = RequestMethod.POST)
 	public String contact(@Valid ContactForm contactForm, BindingResult result, ModelMap model, RedirectAttributes redirectAttributes) {
+		
+		logger.info("Sending contact email to info");
 
 		if (result.hasErrors()) { // IE doesn't allow HTML5 validation
 			if (result.hasFieldErrors("email")) {
@@ -434,6 +433,8 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}
+		
+		logger.info("Sending success");
 
 		redirectAttributes.addFlashAttribute("thankYouMessage", "Thank you for getting in touch.");
 
@@ -504,7 +505,7 @@ public class PublicController extends AbstractBookmarksWebsiteController {
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
 
-		if (environment.acceptsProfiles("prod")) {
+		if (environment.acceptsProfiles(Profiles.of("prod"))) {
 			message.setSubject(contactForm.getName() + " has contacted us");
 			message.setFrom("info@bookmarksbookshop.co.uk");
 			message.setTo("info@bookmarksbookshop.co.uk");

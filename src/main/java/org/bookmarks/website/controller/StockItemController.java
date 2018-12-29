@@ -36,6 +36,7 @@ import org.bookmarks.website.repository.CategoryRepository;
 import org.bookmarks.website.repository.StockItemRepository;
 import org.bookmarks.website.search.StockItemSearchBean;
 import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
@@ -88,28 +89,6 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		return stockItem;
 	}
 
-	/*
-	 * @RequestMapping(value = "/view") public String view(Long id, ModelMap
-	 * modelMap) { StockItem stockItem = stockItemRepository.findOne(id);
-	 * 
-	 * Pageable pageable = new PageRequest(0, 5);
-	 * 
-	 * List<StockItem> interesting =
-	 * stockItemRepository.findByCategoryWithImage(stockItem.getCategory().getId(),
-	 * pageable);
-	 * 
-	 * modelMap.addAttribute(stockItem); modelMap.addAttribute("interesting",
-	 * interesting); return "public/view"; }
-	 * 
-	 * @RequestMapping(value = "/{id}", headers = "Accept=application/json")
-	 * 
-	 * @ResponseBody public ResponseEntity<String> showJson(@PathVariable("id") Long
-	 * id) { StockItem stockItem = stockItemRepository.findOne(id); HttpHeaders
-	 * headers = new HttpHeaders(); headers.add("Content-Type",
-	 * "application/json; charset=utf-8"); if (stockItem == null) { return new
-	 * ResponseEntity<String>(headers, HttpStatus.NOT_FOUND); } return new
-	 * ResponseEntity<String>(stockItem.toJson(), headers, HttpStatus.OK); }
-	 */
 	@RequestMapping(value = "/searchIndex")
 	public String searchIndex(StockItemSearchBean searchBean, ModelMap map) {
 		if (searchBean.getQ() == null) {
@@ -147,53 +126,21 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 			}
 		}
 
-		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(em);
-		// em.getTransaction().begin();
+		FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
 
-		// create native Lucene query unsing the query DSL
-		// alternatively you can write the Lucene query using the Lucene query parser})
-		// or the Lucene programmatic API. The Hibernate Search DSL is recommended
-		// though
 		QueryBuilder qb = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(StockItem.class).get();
 
 		final BooleanJunction<BooleanJunction> bool = qb.bool();
 
-		// Tokenise search
-//		q = q.replace("  ", " "); //Check for double spaces, is there a way to convert multispace into unispace?
-		// String q = q.replaceAll(" +", " ");
-
-		q = q.toLowerCase(); // Othewise throws error with A, The
-
-		StringTokenizer tokeniser = new StringTokenizer(q, " ");
-		while (tokeniser.hasMoreElements()) {
-			String token = tokeniser.nextToken();
-			logger.debug("Token : " + token);
-			if (stopWords.contains(token))
-				continue;
-			Query local = qb.keyword().onFields("title", "authors.name").matching(token).createQuery();
-			bool.must(local);
-		}
-
-		org.apache.lucene.search.Query luceneQuery = bool.createQuery();
-
-		/*
-		 * org.apache.lucene.search.Query luceneQuery = qb .keyword()
-		 * //.onFields("title", "subtitle", "authors.name") .onFields("title",
-		 * "authors.name") .matching(q) .createQuery();
-		 */
+		
+		Query local = qb.simpleQueryString().onFields("title", "authors.name").withAndAsDefaultOperator().matching( q ).createQuery();
+		
 		// wrap Lucene query in a javax.persistence.Query
-		org.hibernate.search.jpa.FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(luceneQuery,
-				StockItem.class);
-		// javax.persistence.Query persistenceQuery =
-		// fullTextEntityManager.createFullTextQuery(luceneQuery, StockItem.class);
-		// persistenceQuery.setProjection( "id", "summary", "body", "mainAuthor.name" );
+		org.hibernate.search.jpa.FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(local,	StockItem.class);
 
 		// Sort by score, then sales
 		SortField scoreSortField = new SortField(null, SortField.Type.SCORE, false);
-		SortField qisSortField = new SortField("quantityInStock", SortField.Type.INT, true);
 		SortField salesLastYearSortField = new SortField("salesLastYear", SortField.Type.INT, true);
-//		org.apache.lucene.search.Sort sort = new Sort(scoreSortField);
-//		org.apache.lucene.search.Sort sort = new Sort(salesSortField);
 		org.apache.lucene.search.Sort sort = new Sort(scoreSortField, salesLastYearSortField);
 
 		fullTextQuery.setMaxResults(searchBean.getNoOfResults());
@@ -601,7 +548,7 @@ public class StockItemController extends AbstractBookmarksWebsiteController {
 		searchBean.setCount(count);
 
 		map.addAttribute("searchBean", searchBean);
-		map.addAttribute("searchTitle", readingList.getName());
+		map.addAttribute("searchTitle", "Reading List");
 		map.addAttribute("pageUrl", "searchByReadingList?readingList.id=" + readingList.getId() + "&readingList.name="
 				+ readingList.getName());
 
