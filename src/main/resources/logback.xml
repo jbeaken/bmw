@@ -50,11 +50,11 @@
 	</logger>
 
 	<logger name="org.hibernate.search">
-		<level value="DEBUG" />
+		<level value="INFO" />
 	</logger>
 
 	<logger name="org.apache.lucene">
-		<level value="DEBUG" />
+		<level value="INFO" />
 	</logger>
 	
 	<logger name="org.springframework.web.servlet">
