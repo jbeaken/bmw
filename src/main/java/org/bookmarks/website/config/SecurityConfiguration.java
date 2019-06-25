@@ -42,6 +42,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    web.ignoring().antMatchers("/img/**,/css/**,/plugins/**,/js/**");
 	}
 	
+	/**
+	 * Using "redirect/thankYou", spring or tomcat appends ;jsessionid=23afasegawe
+	 * which is rejected by StrictHttpFirewall. This is work around to ignore semi-colon
+	 * TODO remove
+	 */
 	@Bean
 	public HttpFirewall allowSemicolonHttpFirewall() {
 	    StrictHttpFirewall firewall = new StrictHttpFirewall();
