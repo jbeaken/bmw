@@ -4,4 +4,4 @@ mvn -f /home/git/bmw/pom.xml -Dmaven.test.skip=true -Dspring.profiles.active=pro
 
 rm -rf /opt/tomcat/bmw/*
 
-cp -r target/bmw-3.0/. /opt/tomcat/webapps/bmw/
+cp -r /home/git/bmw/target/bmw-3.0/. /opt/tomcat/webapps/bmw/
