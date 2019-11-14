@@ -1,13 +1,7 @@
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#!/bin/sh
 
-git pull
-
-mvn -Dmaven.test.skip=true -Dspring.profiles.active=prod clean package
+mvn -f /home/git/bmw/pom.xml -Dmaven.test.skip=true -Dspring.profiles.active=prod clean package
 
 rm -rf /opt/tomcat/bmw/*
-cp -r target/bmw-3.0/. /opt/tomcat/bmw/
 
-# systemctl restart tomcat
-
-
-
+cp -r target/bmw-3.0/. /opt/tomcat/webapps/bmw/
