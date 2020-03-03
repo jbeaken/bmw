@@ -36,7 +36,7 @@
   <div class="sidebar_widget" th:if="${not #lists.isEmpty(application.layout.upcomingEvents)}">
     <h3>Next Shop Event</h3>
     <div class="sidebar_content">
-      <div class="event_image">
+      <div class="event_image" th:if="${application.layout.upcomingEvents[0].stockItem != null}">
       	<a th:href="@{/events}">
       		<img th:src="@{/imageFiles/150/{imageFilename}(imageFilename=${application.layout.upcomingEvents[0].stockItem.imageFilename})}" class="img-responsive sidebar_event_image" />
       	</a>
