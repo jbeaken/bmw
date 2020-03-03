@@ -37,8 +37,15 @@ layout:decorate="~{decorator/public}">
 
 				</div>
 
-				<div th:include="::footer (${event.stockItem.title}, ${event.entrancePrice})" th:if="${event.stockItem != null}"></div>
-				<div th:include="::footer (${event.name}, ${event.entrancePrice})" th:if="${event.stockItem == null and event.showName == true}"></div>
+				<div th:if="${event.stockItem != null}">
+					<p th:if="${event.entrancePrice}">Admission <span th:text="${'&pound;' + #numbers.formatDecimal(event.entrancePrice, 1, 'POINT', 2, 'POINT')}"></span> Payable on door</p>
+					<p class="event_reserve_info">Reserve your place <a th:href="@{/event/registerForEvent(eventName=${event.stockItem.title})}">here</a> or call <span class="event_telephone">020 7637 1848</span></p>
+				</div>
+
+				<div th:if="${event.stockItem == null and event.showName == true}">
+					<p th:if="${event.entrancePrice}">Admission <span th:text="${'&pound;' + #numbers.formatDecimal(event.entrancePrice, 1, 'POINT', 2, 'POINT')}"></span> Payable on door</p>
+					<p class="event_reserve_info">Reserve your place <a th:href="@{/event/registerForEvent(eventName=${event.name})}">here</a> or call <span class="event_telephone">020 7637 1848</span></p>
+				</div>
 
 			</div>
 
@@ -82,11 +89,6 @@ layout:decorate="~{decorator/public}">
         <div class="event_info_holder">
             <span th:if="${event.showBookmarksAddress != null and event.showBookmarksAddress == true}">Bookmarks Bookshop<br/> 1 Bloomsbury Street, London, WC1B 3QE</span>
         </div>
-    </div>
-
-    <div th:fragment="footer (title, price)">
-			<p th:if="${price}">Admission <span th:text="${'&pound;' + #numbers.formatDecimal(price, 1, 'POINT', 2, 'POINT')}"></span> Payable on door</p>
-      <p class="event_reserve_info">Reserve your place <a th:href="@{/event/registerForEvent(eventName=${title})}">here</a> or call <span class="event_telephone">020 7637 1848</span></p>
     </div>
 <!-- /TEMPLATES -->
 
