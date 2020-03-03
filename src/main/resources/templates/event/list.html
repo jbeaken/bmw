@@ -19,7 +19,7 @@ layout:decorate="~{decorator/public}">
 
 			<div class="col-sm-8">
 
-				<div class="event_title" th:text="${event.stockItem.title}" th:if="${event.showName == false}"></div>
+				<div class="event_title" th:text="${event.stockItem.title}" th:if="${event.showName == false and event.stockItem != null}"></div>
 
 				<div class="event_title" th:text="${event.name}" th:if="${event.showName == true}"></div>
 
