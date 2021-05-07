@@ -423,33 +423,35 @@ public class WebsiteController {
 	 * Using json sent from beans, deserialise and update database
 	 **/
 	@RequestMapping(value = "/updateReadingLists")
-//	@Transactional(rollbackFor = ChipsException.class)
-//	@Transactional
 	public ResponseEntity<String> updateReadingLists(@RequestBody ArrayList<ReadingList> readingLists) throws ChipsException, JsonParseException, JsonMappingException, IOException {
 
 		logger.info("About to persist " + readingLists.size() + " reading lists");
 
 		try {
-
-			readingListRepository.deleteAll();
-
-			readingListRepository.flush();
-
-			// Check existance of all stocks and images of bouncies
-			for (ReadingList rl : readingLists) {
-				logger.info("Saving reading list " + rl.getName());
-				logger.info("With " + rl.getStockItems().size() + " stock items");
-				readingListRepository.save(rl);
-			}
-
-			initialise(true, false);
+			updateReadingListsTransactionally(readingLists);
 
 		} catch (Exception e) {
 			logger.error("Cannot update reading lists", e);
 			return new ResponseEntity<String>("error: " + e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
 		}
 
+		initialise(true, false);
+
 		return new ResponseEntity<String>("success", new HttpHeaders(), HttpStatus.OK);
+	}
+
+	@Transactional
+	void updateReadingListsTransactionally(List<ReadingList> readingLists)  {
+		readingListRepository.deleteAll();
+
+		readingListRepository.flush();
+
+		// Check existance of all stocks and images of bouncies
+		for (ReadingList rl : readingLists) {
+			logger.info("Saving reading list " + rl.getName());
+			logger.info("With " + rl.getStockItems().size() + " stock items");
+			readingListRepository.save(rl);
+		}
 	}
 
 	@RequestMapping(value = "/updateEvents")

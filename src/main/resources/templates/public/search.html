@@ -77,10 +77,9 @@
 	<script layout:fragment="bottom_scripts">
 	/*<![CDATA[*/
 	$(function() {
-				//Bootstrap pagination
-				var options = {
-					currentPage: [[${stockItemSearchBean.currentPage + 1}]],
-				//totalPages: 3,
+			//Bootstrap pagination
+			var options = {
+				currentPage: [[${stockItemSearchBean.currentPage + 1}]],
 				totalPages: [[${stockItemSearchBean.totalPages}]],
 				numberOfPages : 10,
 				pageUrl: function(type, page, current){
