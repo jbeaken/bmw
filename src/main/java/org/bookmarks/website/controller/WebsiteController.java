@@ -423,7 +423,7 @@ public class WebsiteController {
 	 * Using json sent from beans, deserialise and update database
 	 **/
 	@RequestMapping(value = "/updateReadingLists")
-	@Transactional(rollbackFor = ChipsException.class)
+//	@Transactional(rollbackFor = ChipsException.class)
 	public @ResponseBody String updateReadingLists(@RequestBody ArrayList<ReadingList> readingLists) throws ChipsException, JsonParseException, JsonMappingException, IOException {
 
 		logger.info("About to persist " + readingLists.size() + " reading lists");
