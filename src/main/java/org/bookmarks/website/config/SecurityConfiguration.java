@@ -51,6 +51,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public HttpFirewall allowSemicolonHttpFirewall() {
 	    StrictHttpFirewall firewall = new StrictHttpFirewall();
 	    firewall.setAllowSemicolon(true);
+		firewall.setAllowUrlEncodedPercent(true);
+		firewall.setAllowUrlEncodedPeriod(true);
 	    return firewall;
 	}
 
