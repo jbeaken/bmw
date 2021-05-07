@@ -424,7 +424,7 @@ public class WebsiteController {
 	 **/
 	@RequestMapping(value = "/updateReadingLists")
 //	@Transactional(rollbackFor = ChipsException.class)
-	@Transactional
+//	@Transactional
 	public ResponseEntity<String> updateReadingLists(@RequestBody ArrayList<ReadingList> readingLists) throws ChipsException, JsonParseException, JsonMappingException, IOException {
 
 		logger.info("About to persist " + readingLists.size() + " reading lists");
@@ -446,7 +446,7 @@ public class WebsiteController {
 
 		} catch (Exception e) {
 			logger.error("Cannot update reading lists", e);
-			return new ResponseEntity<String>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("error: " + e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
 		}
 
 		return new ResponseEntity<String>("success", new HttpHeaders(), HttpStatus.OK);
