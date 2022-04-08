@@ -27,11 +27,8 @@
 		<jasypt.version>1.9.3</jasypt.version>
 		<bouncy.castle.version>1.67</bouncy.castle.version>
 
-		<!-- Image Manipulation -->
-		<imgscalr.version>4.2</imgscalr.version>
-
 		<!-- Hibernate Search -->
-		<hibernate.search>5.10.5.Final</hibernate.search>
+		<hibernate.search>5.11.10.Final</hibernate.search>
 
 	</properties>
 
@@ -93,7 +90,7 @@
 		<dependency>
 			<groupId>org.imgscalr</groupId>
 			<artifactId>imgscalr-lib</artifactId>
-			<version>${imgscalr.version}</version>
+			<version>4.2</version>
 		</dependency>
 
 		<!-- Hibernate Search -->
