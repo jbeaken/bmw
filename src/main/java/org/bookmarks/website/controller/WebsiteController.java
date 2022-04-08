@@ -429,7 +429,6 @@ public class WebsiteController {
 
 		try {
 			updateReadingListsTransactionally(readingLists);
-
 		} catch (Exception e) {
 			logger.error("Cannot update reading lists", e);
 			return new ResponseEntity<String>("error: " + e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);

@@ -16,7 +16,7 @@ public abstract class SearchBean<T> {
 	
 	public Pageable getPageable() {
 		currentPage = ((currentPage == null) ? 0 : currentPage);
-		Pageable pageable = new PageRequest(currentPage, noOfResults);
+		Pageable pageable = PageRequest.of(currentPage, noOfResults);
 		return pageable;
 	}
 
